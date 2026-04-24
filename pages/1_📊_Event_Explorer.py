@@ -4,9 +4,12 @@ from src.data_loader import load_events, load_impacts, get_asset_classes, ASSET_
 from src.visualizations import plot_impact_bar, plot_multi_asset_heatmap
 from src.theory_engine import get_relevant_theories, get_asset_narrative
 
+from src.styles import apply_custom_theme
+apply_custom_theme()
+
 st.set_page_config(page_title="Event Explorer", page_icon="📊", layout="wide")
 
-st.title("📊 Event Explorer")
+st.title("Event Explorer")
 st.markdown("Deep dive into historical economic events and their market impacts.")
 
 events = load_events()
@@ -46,7 +49,7 @@ for trigger in selected_event["triggers"]:
     st.markdown(f"- {trigger}")
 
 # Pre-event conditions
-st.subheader("📈 Pre-Event Macro Conditions")
+st.subheader("Pre-Event Macro Conditions")
 pre = selected_event["pre_conditions"]
 cols = st.columns(5)
 cols[0].metric("Inflation", f"{pre.get('inflation', 'N/A')}%" if pre.get('inflation') else "N/A")
@@ -59,7 +62,7 @@ st.divider()
 
 # Impact visualization
 if selected_id in impacts:
-    st.header("💹 Market Impact Analysis")
+    st.header("Market Impact Analysis")
     
     # Heatmap
     st.subheader("Full Asset Class Heatmap")
@@ -67,7 +70,7 @@ if selected_id in impacts:
     st.plotly_chart(heatmap, use_container_width=True)
     
     # Individual asset drill-down
-    st.subheader("🔍 Asset Class Deep Dive")
+    st.subheader("Asset Class Deep Dive")
     
     available_assets = [a for a in get_asset_classes() 
                         if a in impacts[selected_id] and 
@@ -87,7 +90,7 @@ if selected_id in impacts:
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
-        st.markdown("### 📖 Narrative")
+        st.markdown("### Narrative")
         narrative = get_asset_narrative(selected_asset, selected_event["category"])
         st.info(narrative)
 else:
@@ -96,7 +99,7 @@ else:
 st.divider()
 
 # Economic theories
-st.header("📚 Relevant Economic Theories")
+st.header("Relevant Economic Theories")
 theories = get_relevant_theories(selected_event["category"])
 
 for theory in theories:
