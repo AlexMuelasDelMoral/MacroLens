@@ -1,15 +1,18 @@
 import streamlit as st
 from src.theory_engine import THEORIES
 
+from src.styles import apply_custom_theme
+apply_custom_theme()
+
 st.set_page_config(page_title="Learn", page_icon="📚", layout="wide")
 
-st.title("📚 Learn: Economic Theory & Market Behavior")
+st.title("Learn: Economic Theory & Market Behavior")
 st.markdown("Understand the frameworks that explain how markets respond to economic events.")
 
 st.divider()
 
 # Theories section
-st.header("🧠 Core Economic Frameworks")
+st.header("Core Economic Frameworks")
 
 tabs = st.tabs([theory["name"] for theory in THEORIES.values()])
 
@@ -28,7 +31,7 @@ st.divider()
 # Additional educational content
 st.header("📖 Essential Concepts")
 
-with st.expander("🏦 Understanding Central Bank Policy"):
+with st.expander("Understanding Central Bank Policy"):
     st.markdown("""
     ### The Fed's Tools
     - **Federal Funds Rate**: Primary short-term interest rate tool
@@ -50,7 +53,7 @@ with st.expander("🏦 Understanding Central Bank Policy"):
     6. Real economy responds (6-18 month lag)
     """)
 
-with st.expander("📊 The Yield Curve: A Crystal Ball?"):
+with st.expander("The Yield Curve: A Crystal Ball?"):
     st.markdown("""
     ### What Is It?
     The yield curve plots interest rates across different maturities (e.g., 2Y vs 10Y Treasuries).
@@ -69,7 +72,7 @@ with st.expander("📊 The Yield Curve: A Crystal Ball?"):
     - Inversion = markets expect Fed to cut rates (because of weak economy)
     """)
 
-with st.expander("💰 Asset Class Correlations in Crises"):
+with st.expander("Asset Class Correlations in Crises"):
     st.markdown("""
     ### Normal Regime Correlations
     - Stocks & Bonds: Negative (-0.3 to -0.5)
@@ -91,7 +94,7 @@ with st.expander("💰 Asset Class Correlations in Crises"):
     - Consider regime-shifting: what hedges one crisis type fails in another
     """)
 
-with st.expander("🔥 Stagflation: The Worst Scenario"):
+with st.expander("Stagflation: The Worst Scenario"):
     st.markdown("""
     ### Definition
     High inflation + Low/negative growth + High unemployment
@@ -115,7 +118,7 @@ with st.expander("🔥 Stagflation: The Worst Scenario"):
     - Companies with pricing power
     """)
 
-with st.expander("🛡️ Safe Haven Assets Explained"):
+with st.expander("Safe Haven Assets Explained"):
     st.markdown("""
     ### The Classic Safe Havens
     
@@ -148,7 +151,7 @@ with st.expander("🛡️ Safe Haven Assets Explained"):
 st.divider()
 
 # Recommended reading
-st.header("📚 Recommended Reading")
+st.header("Recommended Reading")
 
 books = [
     {
