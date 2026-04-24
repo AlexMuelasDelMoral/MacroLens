@@ -1,0 +1,304 @@
+{
+  "events": [
+    {
+      "id": "gfc_2008",
+      "name": "Global Financial Crisis",
+      "year": 2008,
+      "start_date": "2008-09-15",
+      "end_date": "2009-03-09",
+      "category": "Financial Crisis",
+      "severity": 10,
+      "duration_months": 18,
+      "geography": "Global",
+      "description": "Collapse of Lehman Brothers triggered worldwide banking crisis and deep recession.",
+      "triggers": ["Housing bubble burst", "Subprime mortgage defaults", "Lehman collapse"],
+      "pre_conditions": {
+        "inflation": 3.8,
+        "fed_funds_rate": 2.0,
+        "unemployment": 6.1,
+        "gdp_growth": -0.1,
+        "vix": 30
+      }
+    },
+    {
+      "id": "covid_2020",
+      "name": "COVID-19 Pandemic",
+      "year": 2020,
+      "start_date": "2020-02-20",
+      "end_date": "2020-03-23",
+      "category": "Health Crisis",
+      "severity": 10,
+      "duration_months": 2,
+      "geography": "Global",
+      "description": "Global pandemic caused fastest bear market in history followed by liquidity-driven rally.",
+      "triggers": ["Global lockdowns", "Economic shutdown", "Supply chain disruption"],
+      "pre_conditions": {
+        "inflation": 2.3,
+        "fed_funds_rate": 1.5,
+        "unemployment": 3.5,
+        "gdp_growth": 2.3,
+        "vix": 15
+      }
+    },
+    {
+      "id": "dotcom_2000",
+      "name": "Dot-com Bubble Burst",
+      "year": 2000,
+      "start_date": "2000-03-10",
+      "end_date": "2002-10-09",
+      "category": "Market Crash",
+      "severity": 9,
+      "duration_months": 30,
+      "geography": "Global",
+      "description": "Tech bubble burst led to prolonged bear market, especially devastating for tech stocks.",
+      "triggers": ["Overvalued tech stocks", "Fed rate hikes", "Y2K anticlimax"],
+      "pre_conditions": {
+        "inflation": 3.4,
+        "fed_funds_rate": 6.0,
+        "unemployment": 4.0,
+        "gdp_growth": 4.1,
+        "vix": 22
+      }
+    },
+    {
+      "id": "oil_shock_1973",
+      "name": "1973 Oil Crisis",
+      "year": 1973,
+      "start_date": "1973-10-01",
+      "end_date": "1974-03-31",
+      "category": "Supply Shock",
+      "severity": 9,
+      "duration_months": 6,
+      "geography": "Global",
+      "description": "OPEC oil embargo caused stagflation - high inflation with stagnant growth.",
+      "triggers": ["OPEC embargo", "Yom Kippur War", "Energy dependency"],
+      "pre_conditions": {
+        "inflation": 6.2,
+        "fed_funds_rate": 10.0,
+        "unemployment": 4.8,
+        "gdp_growth": 5.6,
+        "vix": null
+      }
+    },
+    {
+      "id": "black_monday_1987",
+      "name": "Black Monday",
+      "year": 1987,
+      "start_date": "1987-10-19",
+      "end_date": "1987-10-19",
+      "category": "Market Crash",
+      "severity": 8,
+      "duration_months": 3,
+      "geography": "Global",
+      "description": "Largest single-day percentage drop in Dow history (-22.6%).",
+      "triggers": ["Program trading", "Portfolio insurance", "Overvaluation"],
+      "pre_conditions": {
+        "inflation": 4.3,
+        "fed_funds_rate": 7.3,
+        "unemployment": 6.0,
+        "gdp_growth": 3.5,
+        "vix": null
+      }
+    },
+    {
+      "id": "asian_crisis_1997",
+      "name": "Asian Financial Crisis",
+      "year": 1997,
+      "start_date": "1997-07-02",
+      "end_date": "1998-01-31",
+      "category": "Currency Crisis",
+      "severity": 7,
+      "duration_months": 7,
+      "geography": "Asia",
+      "description": "Thai baht collapse triggered currency crises across Asia, affecting global markets.",
+      "triggers": ["Currency pegs", "Hot money flight", "Banking weakness"],
+      "pre_conditions": {
+        "inflation": 2.3,
+        "fed_funds_rate": 5.5,
+        "unemployment": 4.9,
+        "gdp_growth": 4.5,
+        "vix": 22
+      }
+    },
+    {
+      "id": "russia_ukraine_2022",
+      "name": "Russia-Ukraine War",
+      "year": 2022,
+      "start_date": "2022-02-24",
+      "end_date": "2022-12-31",
+      "category": "Geopolitical",
+      "severity": 8,
+      "duration_months": 12,
+      "geography": "Europe/Global",
+      "description": "War caused energy crisis, commodity spike, and exacerbated inflation.",
+      "triggers": ["Russia invasion", "Energy sanctions", "Commodity disruption"],
+      "pre_conditions": {
+        "inflation": 7.9,
+        "fed_funds_rate": 0.25,
+        "unemployment": 3.8,
+        "gdp_growth": 5.7,
+        "vix": 30
+      }
+    },
+    {
+      "id": "fed_hikes_2022",
+      "name": "Fed Aggressive Rate Hikes 2022-2023",
+      "year": 2022,
+      "start_date": "2022-03-16",
+      "end_date": "2023-07-26",
+      "category": "Monetary Policy",
+      "severity": 7,
+      "duration_months": 16,
+      "geography": "Global",
+      "description": "Fed raised rates from 0.25% to 5.5% - fastest tightening in decades.",
+      "triggers": ["40-year high inflation", "Post-COVID stimulus", "Supply disruptions"],
+      "pre_conditions": {
+        "inflation": 8.5,
+        "fed_funds_rate": 0.25,
+        "unemployment": 3.6,
+        "gdp_growth": 2.1,
+        "vix": 25
+      }
+    },
+    {
+      "id": "banking_crisis_2023",
+      "name": "Regional Banking Crisis",
+      "year": 2023,
+      "start_date": "2023-03-10",
+      "end_date": "2023-05-01",
+      "category": "Financial Crisis",
+      "severity": 6,
+      "duration_months": 2,
+      "geography": "US/Global",
+      "description": "SVB, Signature, First Republic collapses triggered banking sector fears.",
+      "triggers": ["Rate hikes", "Bond portfolio losses", "Bank runs"],
+      "pre_conditions": {
+        "inflation": 6.0,
+        "fed_funds_rate": 4.75,
+        "unemployment": 3.5,
+        "gdp_growth": 2.6,
+        "vix": 25
+      }
+    },
+    {
+      "id": "eu_debt_2011",
+      "name": "European Debt Crisis",
+      "year": 2011,
+      "start_date": "2011-05-01",
+      "end_date": "2012-07-31",
+      "category": "Sovereign Debt",
+      "severity": 7,
+      "duration_months": 15,
+      "geography": "Europe",
+      "description": "Greece, Portugal, Ireland debt crises threatened Eurozone collapse.",
+      "triggers": ["Sovereign debt", "Banking exposure", "Austerity"],
+      "pre_conditions": {
+        "inflation": 3.2,
+        "fed_funds_rate": 0.1,
+        "unemployment": 9.0,
+        "gdp_growth": 1.5,
+        "vix": 25
+      }
+    },
+    {
+      "id": "volcker_1980",
+      "name": "Volcker Shock",
+      "year": 1980,
+      "start_date": "1980-01-01",
+      "end_date": "1982-11-30",
+      "category": "Monetary Policy",
+      "severity": 8,
+      "duration_months": 34,
+      "geography": "Global",
+      "description": "Fed raised rates to 20% to crush inflation, triggering severe recession.",
+      "triggers": ["Double-digit inflation", "Volcker's anti-inflation stance"],
+      "pre_conditions": {
+        "inflation": 13.5,
+        "fed_funds_rate": 14.0,
+        "unemployment": 6.3,
+        "gdp_growth": -0.3,
+        "vix": null
+      }
+    },
+    {
+      "id": "ltcm_1998",
+      "name": "LTCM Collapse",
+      "year": 1998,
+      "start_date": "1998-08-01",
+      "end_date": "1998-10-31",
+      "category": "Financial Crisis",
+      "severity": 6,
+      "duration_months": 3,
+      "geography": "Global",
+      "description": "Hedge fund collapse required Fed-orchestrated bailout.",
+      "triggers": ["Russia default", "Leverage", "Correlation breakdown"],
+      "pre_conditions": {
+        "inflation": 1.6,
+        "fed_funds_rate": 5.5,
+        "unemployment": 4.5,
+        "gdp_growth": 4.5,
+        "vix": 40
+      }
+    },
+    {
+      "id": "gulf_war_1990",
+      "name": "Gulf War / Oil Spike",
+      "year": 1990,
+      "start_date": "1990-08-02",
+      "end_date": "1991-02-28",
+      "category": "Geopolitical",
+      "severity": 6,
+      "duration_months": 7,
+      "geography": "Middle East/Global",
+      "description": "Iraq invasion of Kuwait caused oil spike and brief recession.",
+      "triggers": ["Iraq invasion", "Oil supply fears"],
+      "pre_conditions": {
+        "inflation": 5.4,
+        "fed_funds_rate": 8.0,
+        "unemployment": 5.6,
+        "gdp_growth": 1.9,
+        "vix": 25
+      }
+    },
+    {
+      "id": "inflation_2021",
+      "name": "Post-COVID Inflation Surge",
+      "year": 2021,
+      "start_date": "2021-04-01",
+      "end_date": "2022-06-30",
+      "category": "Inflation Shock",
+      "severity": 7,
+      "duration_months": 15,
+      "geography": "Global",
+      "description": "Supply chain + stimulus drove inflation to 40-year highs.",
+      "triggers": ["Supply chains", "Fiscal stimulus", "Energy"],
+      "pre_conditions": {
+        "inflation": 2.6,
+        "fed_funds_rate": 0.25,
+        "unemployment": 6.0,
+        "gdp_growth": 5.7,
+        "vix": 20
+      }
+    },
+    {
+      "id": "china_2015",
+      "name": "China Stock Crash 2015",
+      "year": 2015,
+      "start_date": "2015-06-12",
+      "end_date": "2016-02-11",
+      "category": "Market Crash",
+      "severity": 5,
+      "duration_months": 8,
+      "geography": "China/Global",
+      "description": "Chinese stock bubble burst, yuan devaluation caused global selloff.",
+      "triggers": ["Overvaluation", "Margin debt", "Yuan devaluation"],
+      "pre_conditions": {
+        "inflation": 0.1,
+        "fed_funds_rate": 0.25,
+        "unemployment": 5.3,
+        "gdp_growth": 2.9,
+        "vix": 14
+      }
+    }
+  ]
+}
