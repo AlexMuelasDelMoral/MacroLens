@@ -8,3 +8,6 @@ scipy
 requests
 python-dateutil
 openpyxl
+fredapi
+xgboost
+reportlab
