@@ -89,7 +89,7 @@ with col4:
 st.write("")
 
 # Features Grid
-st.markdown('<div class="section-label">⚡ CAPABILITIES</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-label">CAPABILITIES</div>', unsafe_allow_html=True)
 st.markdown("## Advanced Market Intelligence")
 
 col1, col2 = st.columns(2, gap="medium")
@@ -97,7 +97,6 @@ col1, col2 = st.columns(2, gap="medium")
 with col1:
     st.markdown("""
     <div class="feature-card">
-        <div class="feature-icon">📊</div>
         <div class="feature-title">Event Explorer</div>
         <div class="feature-description">
             Deep-dive into major historical economic events with comprehensive impact 
@@ -123,7 +122,6 @@ with col1:
 with col2:
     st.markdown("""
     <div class="feature-card">
-        <div class="feature-icon">🔮</div>
         <div class="feature-title">Scenario Builder</div>
         <div class="feature-description">
             Input custom macro conditions and discover similar historical precedents. 
@@ -137,7 +135,6 @@ with col2:
 
     st.markdown("""
     <div class="feature-card">
-        <div class="feature-icon">🧠</div>
         <div class="feature-title">Theory Engine</div>
         <div class="feature-description">
             Understand the WHY behind market movements. Flight to quality, monetary 
@@ -216,9 +213,9 @@ with st.sidebar:
     st.caption("Select a tool above to begin")
     
     st.markdown("---")
-    st.markdown("### ⚠️ Disclaimer")
+    st.markdown("### Disclaimer")
     st.caption("For educational and research purposes only. Not financial advice.")
     
     st.markdown("---")
-    st.markdown("### 📊 Data Sources")
+    st.markdown("### Data Sources")
     st.caption("Federal Reserve (FRED) • Yahoo Finance • Historical Archives")

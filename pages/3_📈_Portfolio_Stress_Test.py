@@ -6,8 +6,6 @@ from src.data_loader import load_events, load_impacts, get_asset_classes, ASSET_
 from src.styles import apply_custom_theme
 apply_custom_theme()
 
-st.set_page_config(page_title="Portfolio Stress Test", page_icon="📈", layout="wide")
-
 st.title("Portfolio Stress Test")
 st.markdown("Enter your portfolio allocation and see how it would have performed during historical crisis events.")
 
@@ -187,4 +185,4 @@ if st.button("Run Stress Test", type="primary", use_container_width=True):
         st.plotly_chart(alloc_fig, use_container_width=True)
 
 st.divider()
-st.info("💡 **Tip:** Diversification across uncorrelated assets (stocks, bonds, gold, alternatives) historically reduces drawdowns during crises.")
+st.info("**Tip:** Diversification across uncorrelated assets (stocks, bonds, gold, alternatives) historically reduces drawdowns during crises.")

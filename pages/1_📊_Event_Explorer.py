@@ -7,8 +7,6 @@ from src.theory_engine import get_relevant_theories, get_asset_narrative
 from src.styles import apply_custom_theme
 apply_custom_theme()
 
-st.set_page_config(page_title="Event Explorer", page_icon="📊", layout="wide")
-
 st.title("Event Explorer")
 st.markdown("Deep dive into historical economic events and their market impacts.")
 
@@ -33,7 +31,7 @@ with col2:
 
 # Event details
 st.divider()
-st.header(f"📌 {selected_event['name']}")
+st.header(f"{selected_event['name']}")
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Category", selected_event["category"])

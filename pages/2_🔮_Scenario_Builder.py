@@ -8,8 +8,6 @@ from src.theory_engine import get_relevant_theories
 from src.styles import apply_custom_theme
 apply_custom_theme()
 
-st.set_page_config(page_title="Scenario Builder", page_icon="🔮", layout="wide")
-
 st.title("Scenario Builder")
 st.markdown("Input current/hypothetical macro conditions and find similar historical precedents.")
 
@@ -194,4 +192,4 @@ if st.session_state.get("analyzed", False):
                 for asset, implication in theory["implications"].items():
                     st.markdown(f"- **{asset.replace('_', ' ').title()}**: {implication}")
 else:
-    st.info("👆 Set your macro conditions above and click 'Analyze Scenario' to see results.")
+    st.info("Set your macro conditions above and click 'Analyze Scenario' to see results.")

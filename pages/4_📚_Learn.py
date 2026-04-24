@@ -4,8 +4,6 @@ from src.theory_engine import THEORIES
 from src.styles import apply_custom_theme
 apply_custom_theme()
 
-st.set_page_config(page_title="Learn", page_icon="📚", layout="wide")
-
 st.title("Learn: Economic Theory & Market Behavior")
 st.markdown("Understand the frameworks that explain how markets respond to economic events.")
 
