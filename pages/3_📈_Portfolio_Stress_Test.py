@@ -3,15 +3,18 @@ import pandas as pd
 import plotly.graph_objects as go
 from src.data_loader import load_events, load_impacts, get_asset_classes, ASSET_LABELS
 
+from src.styles import apply_custom_theme
+apply_custom_theme()
+
 st.set_page_config(page_title="Portfolio Stress Test", page_icon="📈", layout="wide")
 
-st.title("📈 Portfolio Stress Test")
+st.title("Portfolio Stress Test")
 st.markdown("Enter your portfolio allocation and see how it would have performed during historical crisis events.")
 
 st.divider()
 
 # Portfolio input
-st.header("💼 Your Portfolio")
+st.header("Your Portfolio")
 st.caption("Enter allocation percentages (must sum to 100%)")
 
 # Default allocations
@@ -52,9 +55,9 @@ for i, asset in enumerate(selected_assets):
 total_allocation = sum(allocations.values())
 
 if abs(total_allocation - 100) > 0.1:
-    st.warning(f"⚠️ Total allocation: {total_allocation:.1f}% (should be 100%)")
+    st.warning(f"Total allocation: {total_allocation:.1f}% (should be 100%)")
 else:
-    st.success(f"✅ Total allocation: {total_allocation:.1f}%")
+    st.success(f"Total allocation: {total_allocation:.1f}%")
 
 # Portfolio size
 portfolio_value = st.number_input("Portfolio Value ($)", 
@@ -63,7 +66,7 @@ portfolio_value = st.number_input("Portfolio Value ($)",
 st.divider()
 
 # Event selection for stress test
-st.header("🌪️ Select Stress Test Events")
+st.header("Select Stress Test Events")
 
 events = load_events()
 impacts = load_impacts()
@@ -78,14 +81,14 @@ selected_event_names = st.multiselect(
     default=event_names[:3] if len(event_names) >= 3 else event_names
 )
 
-if st.button("🔥 Run Stress Test", type="primary", use_container_width=True):
+if st.button("Run Stress Test", type="primary", use_container_width=True):
     if abs(total_allocation - 100) > 0.1:
         st.error("Please ensure allocations sum to 100% before running.")
     elif not selected_event_names:
         st.error("Please select at least one event.")
     else:
         st.divider()
-        st.header("📊 Stress Test Results")
+        st.header("Stress Test Results")
         
         # Calculate for each event
         results = []
@@ -146,7 +149,7 @@ if st.button("🔥 Run Stress Test", type="primary", use_container_width=True):
         st.plotly_chart(fig, use_container_width=True)
         
         # Summary table
-        st.subheader("📋 Detailed Results")
+        st.subheader("Detailed Results")
         
         pivot = df.pivot_table(
             index=["Event", "Year"],
@@ -164,7 +167,7 @@ if st.button("🔥 Run Stress Test", type="primary", use_container_width=True):
         )
         
         # Worst case scenario
-        st.subheader("🚨 Worst Case Scenario")
+        st.subheader("Worst Case Scenario")
         worst = df.loc[df["Return (%)"].idxmin()]
         
         col1, col2, col3 = st.columns(3)
@@ -174,7 +177,7 @@ if st.button("🔥 Run Stress Test", type="primary", use_container_width=True):
                      delta=f"${worst['P&L ($)']:+,.0f}")
         
         # Portfolio allocation visualization
-        st.subheader("🥧 Your Portfolio Allocation")
+        st.subheader("Your Portfolio Allocation")
         alloc_fig = go.Figure(data=[go.Pie(
             labels=[ASSET_LABELS.get(k, k) for k in allocations.keys()],
             values=list(allocations.values()),
