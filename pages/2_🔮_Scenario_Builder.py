@@ -5,15 +5,18 @@ from src.similarity_engine import find_similar_events, aggregate_impact_predicti
 from src.visualizations import plot_similarity_scores, plot_prediction_with_uncertainty
 from src.theory_engine import get_relevant_theories
 
+from src.styles import apply_custom_theme
+apply_custom_theme()
+
 st.set_page_config(page_title="Scenario Builder", page_icon="🔮", layout="wide")
 
-st.title("🔮 Scenario Builder")
+st.title("Scenario Builder")
 st.markdown("Input current/hypothetical macro conditions and find similar historical precedents.")
 
 st.divider()
 
 # Input panel
-st.header("📝 Set Macro Conditions")
+st.header("Set Macro Conditions")
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -45,7 +48,7 @@ with col2:
     top_n = st.slider("Number of similar events", 3, 10, 5)
 
 # Run analysis
-if st.button("🔍 Analyze Scenario", type="primary", use_container_width=True):
+if st.button("Analyze Scenario", type="primary", use_container_width=True):
     user_conditions = {
         "inflation": inflation,
         "fed_funds_rate": fed_rate,
@@ -67,7 +70,7 @@ if st.session_state.get("analyzed", False):
     similar_events = find_similar_events(user_conditions, category_filter, top_n)
     
     st.divider()
-    st.header("🎯 Analysis Results")
+    st.header("Analysis Results")
     
     # Similarity scores
     st.subheader("Most Similar Historical Events")
@@ -75,7 +78,7 @@ if st.session_state.get("analyzed", False):
     st.plotly_chart(sim_chart, use_container_width=True)
     
     # Detail cards for top matches
-    st.subheader("📋 Top Matches Details")
+    st.subheader("Top Matches Details")
     
     for i, item in enumerate(similar_events[:3]):
         event = item["event"]
@@ -112,7 +115,7 @@ if st.session_state.get("analyzed", False):
     st.divider()
     
     # Asset predictions
-    st.header("💹 Predicted Market Impact")
+    st.header("Predicted Market Impact")
     st.caption("Weighted average based on similarity scores with historical range shown as uncertainty band")
     
     selected_asset = st.selectbox(
@@ -134,7 +137,7 @@ if st.session_state.get("analyzed", False):
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
-            st.markdown("### 📊 Summary Table")
+            st.markdown("### Summary Table")
             summary_data = []
             for horizon, pred in predictions.items():
                 if pred:
@@ -147,7 +150,7 @@ if st.session_state.get("analyzed", False):
             st.dataframe(pd.DataFrame(summary_data), hide_index=True, use_container_width=True)
         
         # All assets summary
-        st.subheader("📊 All Asset Classes - Expected 6M Impact")
+        st.subheader("All Asset Classes - Expected 6M Impact")
         all_assets_data = []
         for asset in get_asset_classes():
             preds = aggregate_impact_prediction(similar_events, asset)
@@ -178,7 +181,7 @@ if st.session_state.get("analyzed", False):
     st.divider()
     
     # Relevant theory
-    st.header("📚 Theoretical Framework")
+    st.header("Theoretical Framework")
     
     # Get theories from top matched categories
     top_categories = list(set([item["event"]["category"] for item in similar_events[:3]]))
