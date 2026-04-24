@@ -110,7 +110,6 @@ with col1:
 
     st.markdown("""
     <div class="feature-card">
-        <div class="feature-icon">📈</div>
         <div class="feature-title">Portfolio Stress Testing</div>
         <div class="feature-description">
             Simulate your portfolio's behavior under historical crisis scenarios. 

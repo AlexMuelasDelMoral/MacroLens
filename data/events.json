@@ -12,13 +12,7 @@
       "geography": "Global",
       "description": "Collapse of Lehman Brothers triggered worldwide banking crisis and deep recession.",
       "triggers": ["Housing bubble burst", "Subprime mortgage defaults", "Lehman collapse"],
-      "pre_conditions": {
-        "inflation": 3.8,
-        "fed_funds_rate": 2.0,
-        "unemployment": 6.1,
-        "gdp_growth": -0.1,
-        "vix": 30
-      }
+      "pre_conditions": {"inflation": 3.8, "fed_funds_rate": 2.0, "unemployment": 6.1, "gdp_growth": -0.1, "vix": 30}
     },
     {
       "id": "covid_2020",
@@ -32,13 +26,7 @@
       "geography": "Global",
       "description": "Global pandemic caused fastest bear market in history followed by liquidity-driven rally.",
       "triggers": ["Global lockdowns", "Economic shutdown", "Supply chain disruption"],
-      "pre_conditions": {
-        "inflation": 2.3,
-        "fed_funds_rate": 1.5,
-        "unemployment": 3.5,
-        "gdp_growth": 2.3,
-        "vix": 15
-      }
+      "pre_conditions": {"inflation": 2.3, "fed_funds_rate": 1.5, "unemployment": 3.5, "gdp_growth": 2.3, "vix": 15}
     },
     {
       "id": "dotcom_2000",
@@ -52,13 +40,7 @@
       "geography": "Global",
       "description": "Tech bubble burst led to prolonged bear market, especially devastating for tech stocks.",
       "triggers": ["Overvalued tech stocks", "Fed rate hikes", "Y2K anticlimax"],
-      "pre_conditions": {
-        "inflation": 3.4,
-        "fed_funds_rate": 6.0,
-        "unemployment": 4.0,
-        "gdp_growth": 4.1,
-        "vix": 22
-      }
+      "pre_conditions": {"inflation": 3.4, "fed_funds_rate": 6.0, "unemployment": 4.0, "gdp_growth": 4.1, "vix": 22}
     },
     {
       "id": "oil_shock_1973",
@@ -72,13 +54,7 @@
       "geography": "Global",
       "description": "OPEC oil embargo caused stagflation - high inflation with stagnant growth.",
       "triggers": ["OPEC embargo", "Yom Kippur War", "Energy dependency"],
-      "pre_conditions": {
-        "inflation": 6.2,
-        "fed_funds_rate": 10.0,
-        "unemployment": 4.8,
-        "gdp_growth": 5.6,
-        "vix": null
-      }
+      "pre_conditions": {"inflation": 6.2, "fed_funds_rate": 10.0, "unemployment": 4.8, "gdp_growth": 5.6, "vix": null}
     },
     {
       "id": "black_monday_1987",
@@ -92,13 +68,7 @@
       "geography": "Global",
       "description": "Largest single-day percentage drop in Dow history (-22.6%).",
       "triggers": ["Program trading", "Portfolio insurance", "Overvaluation"],
-      "pre_conditions": {
-        "inflation": 4.3,
-        "fed_funds_rate": 7.3,
-        "unemployment": 6.0,
-        "gdp_growth": 3.5,
-        "vix": null
-      }
+      "pre_conditions": {"inflation": 4.3, "fed_funds_rate": 7.3, "unemployment": 6.0, "gdp_growth": 3.5, "vix": null}
     },
     {
       "id": "asian_crisis_1997",
@@ -112,13 +82,7 @@
       "geography": "Asia",
       "description": "Thai baht collapse triggered currency crises across Asia, affecting global markets.",
       "triggers": ["Currency pegs", "Hot money flight", "Banking weakness"],
-      "pre_conditions": {
-        "inflation": 2.3,
-        "fed_funds_rate": 5.5,
-        "unemployment": 4.9,
-        "gdp_growth": 4.5,
-        "vix": 22
-      }
+      "pre_conditions": {"inflation": 2.3, "fed_funds_rate": 5.5, "unemployment": 4.9, "gdp_growth": 4.5, "vix": 22}
     },
     {
       "id": "russia_ukraine_2022",
@@ -132,13 +96,7 @@
       "geography": "Europe/Global",
       "description": "War caused energy crisis, commodity spike, and exacerbated inflation.",
       "triggers": ["Russia invasion", "Energy sanctions", "Commodity disruption"],
-      "pre_conditions": {
-        "inflation": 7.9,
-        "fed_funds_rate": 0.25,
-        "unemployment": 3.8,
-        "gdp_growth": 5.7,
-        "vix": 30
-      }
+      "pre_conditions": {"inflation": 7.9, "fed_funds_rate": 0.25, "unemployment": 3.8, "gdp_growth": 5.7, "vix": 30}
     },
     {
       "id": "fed_hikes_2022",
@@ -152,13 +110,7 @@
       "geography": "Global",
       "description": "Fed raised rates from 0.25% to 5.5% - fastest tightening in decades.",
       "triggers": ["40-year high inflation", "Post-COVID stimulus", "Supply disruptions"],
-      "pre_conditions": {
-        "inflation": 8.5,
-        "fed_funds_rate": 0.25,
-        "unemployment": 3.6,
-        "gdp_growth": 2.1,
-        "vix": 25
-      }
+      "pre_conditions": {"inflation": 8.5, "fed_funds_rate": 0.25, "unemployment": 3.6, "gdp_growth": 2.1, "vix": 25}
     },
     {
       "id": "banking_crisis_2023",
@@ -172,13 +124,7 @@
       "geography": "US/Global",
       "description": "SVB, Signature, First Republic collapses triggered banking sector fears.",
       "triggers": ["Rate hikes", "Bond portfolio losses", "Bank runs"],
-      "pre_conditions": {
-        "inflation": 6.0,
-        "fed_funds_rate": 4.75,
-        "unemployment": 3.5,
-        "gdp_growth": 2.6,
-        "vix": 25
-      }
+      "pre_conditions": {"inflation": 6.0, "fed_funds_rate": 4.75, "unemployment": 3.5, "gdp_growth": 2.6, "vix": 25}
     },
     {
       "id": "eu_debt_2011",
@@ -192,13 +138,7 @@
       "geography": "Europe",
       "description": "Greece, Portugal, Ireland debt crises threatened Eurozone collapse.",
       "triggers": ["Sovereign debt", "Banking exposure", "Austerity"],
-      "pre_conditions": {
-        "inflation": 3.2,
-        "fed_funds_rate": 0.1,
-        "unemployment": 9.0,
-        "gdp_growth": 1.5,
-        "vix": 25
-      }
+      "pre_conditions": {"inflation": 3.2, "fed_funds_rate": 0.1, "unemployment": 9.0, "gdp_growth": 1.5, "vix": 25}
     },
     {
       "id": "volcker_1980",
@@ -212,13 +152,7 @@
       "geography": "Global",
       "description": "Fed raised rates to 20% to crush inflation, triggering severe recession.",
       "triggers": ["Double-digit inflation", "Volcker's anti-inflation stance"],
-      "pre_conditions": {
-        "inflation": 13.5,
-        "fed_funds_rate": 14.0,
-        "unemployment": 6.3,
-        "gdp_growth": -0.3,
-        "vix": null
-      }
+      "pre_conditions": {"inflation": 13.5, "fed_funds_rate": 14.0, "unemployment": 6.3, "gdp_growth": -0.3, "vix": null}
     },
     {
       "id": "ltcm_1998",
@@ -232,13 +166,7 @@
       "geography": "Global",
       "description": "Hedge fund collapse required Fed-orchestrated bailout.",
       "triggers": ["Russia default", "Leverage", "Correlation breakdown"],
-      "pre_conditions": {
-        "inflation": 1.6,
-        "fed_funds_rate": 5.5,
-        "unemployment": 4.5,
-        "gdp_growth": 4.5,
-        "vix": 40
-      }
+      "pre_conditions": {"inflation": 1.6, "fed_funds_rate": 5.5, "unemployment": 4.5, "gdp_growth": 4.5, "vix": 40}
     },
     {
       "id": "gulf_war_1990",
@@ -252,13 +180,7 @@
       "geography": "Middle East/Global",
       "description": "Iraq invasion of Kuwait caused oil spike and brief recession.",
       "triggers": ["Iraq invasion", "Oil supply fears"],
-      "pre_conditions": {
-        "inflation": 5.4,
-        "fed_funds_rate": 8.0,
-        "unemployment": 5.6,
-        "gdp_growth": 1.9,
-        "vix": 25
-      }
+      "pre_conditions": {"inflation": 5.4, "fed_funds_rate": 8.0, "unemployment": 5.6, "gdp_growth": 1.9, "vix": 25}
     },
     {
       "id": "inflation_2021",
@@ -272,13 +194,7 @@
       "geography": "Global",
       "description": "Supply chain + stimulus drove inflation to 40-year highs.",
       "triggers": ["Supply chains", "Fiscal stimulus", "Energy"],
-      "pre_conditions": {
-        "inflation": 2.6,
-        "fed_funds_rate": 0.25,
-        "unemployment": 6.0,
-        "gdp_growth": 5.7,
-        "vix": 20
-      }
+      "pre_conditions": {"inflation": 2.6, "fed_funds_rate": 0.25, "unemployment": 6.0, "gdp_growth": 5.7, "vix": 20}
     },
     {
       "id": "china_2015",
@@ -292,13 +208,217 @@
       "geography": "China/Global",
       "description": "Chinese stock bubble burst, yuan devaluation caused global selloff.",
       "triggers": ["Overvaluation", "Margin debt", "Yuan devaluation"],
-      "pre_conditions": {
-        "inflation": 0.1,
-        "fed_funds_rate": 0.25,
-        "unemployment": 5.3,
-        "gdp_growth": 2.9,
-        "vix": 14
-      }
+      "pre_conditions": {"inflation": 0.1, "fed_funds_rate": 0.25, "unemployment": 5.3, "gdp_growth": 2.9, "vix": 14}
+    },
+    {
+      "id": "sep_11_2001",
+      "name": "September 11 Attacks",
+      "year": 2001,
+      "start_date": "2001-09-11",
+      "end_date": "2001-10-31",
+      "category": "Geopolitical",
+      "severity": 8,
+      "duration_months": 2,
+      "geography": "US/Global",
+      "description": "Terror attacks closed US markets for 4 days, caused sharp selloff and travel/insurance sector collapse.",
+      "triggers": ["Terrorist attacks", "Airline shutdown", "War fears"],
+      "pre_conditions": {"inflation": 2.6, "fed_funds_rate": 3.5, "unemployment": 5.0, "gdp_growth": 1.0, "vix": 34}
+    },
+    {
+      "id": "enron_2001",
+      "name": "Enron/Accounting Scandals",
+      "year": 2001,
+      "start_date": "2001-10-01",
+      "end_date": "2002-07-31",
+      "category": "Financial Crisis",
+      "severity": 6,
+      "duration_months": 10,
+      "geography": "US",
+      "description": "Enron, WorldCom, Tyco accounting scandals shattered investor confidence.",
+      "triggers": ["Accounting fraud", "Auditor failures", "Corporate governance"],
+      "pre_conditions": {"inflation": 2.7, "fed_funds_rate": 2.0, "unemployment": 5.5, "gdp_growth": 1.0, "vix": 35}
+    },
+    {
+      "id": "greek_crisis_2015",
+      "name": "Greek Debt Crisis / Grexit",
+      "year": 2015,
+      "start_date": "2015-06-01",
+      "end_date": "2015-08-31",
+      "category": "Sovereign Debt",
+      "severity": 5,
+      "duration_months": 3,
+      "geography": "Europe",
+      "description": "Greece defaulted on IMF payment, capital controls imposed, Grexit feared.",
+      "triggers": ["Debt unsustainability", "Referendum", "Bank holiday"],
+      "pre_conditions": {"inflation": 0.1, "fed_funds_rate": 0.25, "unemployment": 5.3, "gdp_growth": 2.9, "vix": 15}
+    },
+    {
+      "id": "brexit_2016",
+      "name": "Brexit Referendum",
+      "year": 2016,
+      "start_date": "2016-06-23",
+      "end_date": "2016-07-31",
+      "category": "Geopolitical",
+      "severity": 6,
+      "duration_months": 2,
+      "geography": "Europe/Global",
+      "description": "UK voted to leave EU, pound collapsed, global risk-off initially but quick recovery.",
+      "triggers": ["EU referendum", "Political uncertainty"],
+      "pre_conditions": {"inflation": 1.0, "fed_funds_rate": 0.5, "unemployment": 4.9, "gdp_growth": 1.6, "vix": 17}
+    },
+    {
+      "id": "taper_tantrum_2013",
+      "name": "Taper Tantrum",
+      "year": 2013,
+      "start_date": "2013-05-22",
+      "end_date": "2013-09-30",
+      "category": "Monetary Policy",
+      "severity": 5,
+      "duration_months": 4,
+      "geography": "Global",
+      "description": "Fed hints at reducing QE caused bond rout and EM currency crisis.",
+      "triggers": ["QE tapering hint", "Bond market panic"],
+      "pre_conditions": {"inflation": 1.4, "fed_funds_rate": 0.15, "unemployment": 7.5, "gdp_growth": 1.8, "vix": 14}
+    },
+    {
+      "id": "flash_crash_2010",
+      "name": "Flash Crash 2010",
+      "year": 2010,
+      "start_date": "2010-05-06",
+      "end_date": "2010-05-06",
+      "category": "Market Crash",
+      "severity": 4,
+      "duration_months": 1,
+      "geography": "US",
+      "description": "Dow dropped 1000 points in minutes due to algorithmic trading cascade.",
+      "triggers": ["Algorithmic trading", "Liquidity evaporation", "Spoofing"],
+      "pre_conditions": {"inflation": 2.2, "fed_funds_rate": 0.15, "unemployment": 9.6, "gdp_growth": 2.6, "vix": 25}
+    },
+    {
+      "id": "oil_crash_2014",
+      "name": "Oil Price Collapse",
+      "year": 2014,
+      "start_date": "2014-06-01",
+      "end_date": "2016-02-11",
+      "category": "Supply Shock",
+      "severity": 7,
+      "duration_months": 20,
+      "geography": "Global",
+      "description": "Oil crashed from $100 to $26 due to US shale boom and OPEC price war.",
+      "triggers": ["US shale production", "OPEC refusal to cut", "Demand weakness"],
+      "pre_conditions": {"inflation": 2.1, "fed_funds_rate": 0.1, "unemployment": 6.1, "gdp_growth": 2.5, "vix": 12}
+    },
+    {
+      "id": "trade_war_2018",
+      "name": "US-China Trade War",
+      "year": 2018,
+      "start_date": "2018-03-22",
+      "end_date": "2019-12-31",
+      "category": "Geopolitical",
+      "severity": 6,
+      "duration_months": 22,
+      "geography": "US/China/Global",
+      "description": "Trump imposed tariffs on China, triggering retaliatory measures and market volatility.",
+      "triggers": ["Tariffs", "IP theft concerns", "Trade imbalance"],
+      "pre_conditions": {"inflation": 2.4, "fed_funds_rate": 1.5, "unemployment": 4.1, "gdp_growth": 2.9, "vix": 16}
+    },
+    {
+      "id": "trump_election_2016",
+      "name": "Trump Election 2016",
+      "year": 2016,
+      "start_date": "2016-11-08",
+      "end_date": "2017-01-31",
+      "category": "Political",
+      "severity": 4,
+      "duration_months": 3,
+      "geography": "US/Global",
+      "description": "Unexpected Trump win caused initial futures crash then 'Trump rally' on tax cut hopes.",
+      "triggers": ["Election surprise", "Tax cut expectations", "Deregulation hopes"],
+      "pre_conditions": {"inflation": 1.6, "fed_funds_rate": 0.4, "unemployment": 4.9, "gdp_growth": 1.6, "vix": 14}
+    },
+    {
+      "id": "japan_bubble_1990",
+      "name": "Japan Asset Bubble Burst",
+      "year": 1990,
+      "start_date": "1990-01-01",
+      "end_date": "1992-12-31",
+      "category": "Market Crash",
+      "severity": 8,
+      "duration_months": 36,
+      "geography": "Japan/Global",
+      "description": "Nikkei crashed from 39,000 to 14,000, starting Japan's 'Lost Decade'.",
+      "triggers": ["Real estate bubble", "Monetary tightening", "Overvaluation"],
+      "pre_conditions": {"inflation": 5.4, "fed_funds_rate": 8.25, "unemployment": 5.4, "gdp_growth": 1.9, "vix": null}
+    },
+    {
+      "id": "mexico_peso_1994",
+      "name": "Mexican Peso Crisis (Tequila)",
+      "year": 1994,
+      "start_date": "1994-12-20",
+      "end_date": "1995-03-31",
+      "category": "Currency Crisis",
+      "severity": 5,
+      "duration_months": 4,
+      "geography": "Mexico/EM",
+      "description": "Peso devaluation triggered broader EM currency crisis ('Tequila effect').",
+      "triggers": ["Currency peg", "Capital flight", "Political instability"],
+      "pre_conditions": {"inflation": 2.6, "fed_funds_rate": 5.5, "unemployment": 5.5, "gdp_growth": 4.0, "vix": 12}
+    },
+    {
+      "id": "argentina_2001",
+      "name": "Argentine Default",
+      "year": 2001,
+      "start_date": "2001-12-01",
+      "end_date": "2002-06-30",
+      "category": "Sovereign Debt",
+      "severity": 5,
+      "duration_months": 7,
+      "geography": "Argentina/EM",
+      "description": "Largest sovereign default in history, peso devaluation, banking crisis.",
+      "triggers": ["Unsustainable debt", "Currency peg", "Bank runs"],
+      "pre_conditions": {"inflation": 2.8, "fed_funds_rate": 2.0, "unemployment": 5.5, "gdp_growth": 1.0, "vix": 30}
+    },
+    {
+      "id": "iran_oil_1979",
+      "name": "Iranian Revolution Oil Shock",
+      "year": 1979,
+      "start_date": "1979-01-01",
+      "end_date": "1980-04-30",
+      "category": "Supply Shock",
+      "severity": 8,
+      "duration_months": 16,
+      "geography": "Global",
+      "description": "Iranian revolution disrupted oil supply, prices doubled, second oil shock.",
+      "triggers": ["Iranian revolution", "Iran-Iraq war", "Supply disruption"],
+      "pre_conditions": {"inflation": 11.3, "fed_funds_rate": 10.0, "unemployment": 5.8, "gdp_growth": 3.2, "vix": null}
+    },
+    {
+      "id": "sars_2003",
+      "name": "SARS Outbreak",
+      "year": 2003,
+      "start_date": "2003-03-01",
+      "end_date": "2003-07-31",
+      "category": "Health Crisis",
+      "severity": 4,
+      "duration_months": 5,
+      "geography": "Asia/Global",
+      "description": "SARS outbreak hit Asian economies, especially Hong Kong, airlines, tourism.",
+      "triggers": ["Novel virus", "Travel restrictions", "Economic slowdown"],
+      "pre_conditions": {"inflation": 2.3, "fed_funds_rate": 1.25, "unemployment": 5.9, "gdp_growth": 2.0, "vix": 25}
+    },
+    {
+      "id": "sl_crisis_1989",
+      "name": "Savings & Loan Crisis",
+      "year": 1989,
+      "start_date": "1989-01-01",
+      "end_date": "1991-06-30",
+      "category": "Financial Crisis",
+      "severity": 6,
+      "duration_months": 30,
+      "geography": "US",
+      "description": "Over 1000 S&Ls failed, massive government bailout, real estate collapse.",
+      "triggers": ["Deregulation", "Real estate speculation", "Rising rates"],
+      "pre_conditions": {"inflation": 4.8, "fed_funds_rate": 9.3, "unemployment": 5.3, "gdp_growth": 3.7, "vix": null}
     }
   ]
 }

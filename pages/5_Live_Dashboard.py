@@ -10,17 +10,17 @@ from src.live_data import (
 )
 from src.visualizations import plot_macro_gauge
 
-st.set_page_config(page_title="Live Dashboard", page_icon="📡", layout="wide")
+st.set_page_config(page_title="Live Dashboard", layout="wide")
 apply_custom_theme()
 
-st.markdown('<div class="section-label">📡 REAL-TIME DATA</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-label">REAL-TIME DATA</div>', unsafe_allow_html=True)
 st.markdown("# Live Macro Dashboard")
 st.caption(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M UTC')}")
 
 # Check FRED connection
 fred = get_fred_client()
 if not fred:
-    st.error("⚠️ FRED API not configured. Add your API key to `.streamlit/secrets.toml`")
+    st.error("FRED API not configured. Add your API key to `.streamlit/secrets.toml`")
     st.code('FRED_API_KEY = "your_key_here"', language="toml")
     st.info("Get your free API key at: https://fred.stlouisfed.org/docs/api/api_key.html")
     st.stop()
@@ -33,7 +33,7 @@ with st.spinner("Fetching latest data..."):
 st.divider()
 
 # Key Indicators Row
-st.markdown("## 🎯 Key Economic Indicators")
+st.markdown("## Key Economic Indicators")
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -73,7 +73,7 @@ st.write("")
 col1, col2 = st.columns([1, 2])
 
 with col1:
-    st.markdown("### 🚨 Recession Signal")
+    st.markdown("### Recession Signal")
     if recession_prob is not None:
         fig = plot_macro_gauge(
             recession_prob,
@@ -84,14 +84,14 @@ with col1:
         st.plotly_chart(fig, use_container_width=True)
         
         if recession_prob >= 70:
-            st.error(f"⚠️ HIGH RISK: {recession_prob}% probability based on yield curve")
+            st.error(f"HIGH RISK: {recession_prob}% probability based on yield curve")
         elif recession_prob >= 40:
-            st.warning(f"⚡ MODERATE RISK: {recession_prob}%")
+            st.warning(f"MODERATE RISK: {recession_prob}%")
         else:
-            st.success(f"✅ LOW RISK: {recession_prob}%")
+            st.success(f"LOW RISK: {recession_prob}%")
 
 with col2:
-    st.markdown("### 📊 Yield Curve Status")
+    st.markdown("### Yield Curve Status")
     yc = snapshot.get("yield_curve")
     if yc is not None:
         curve_data = fetch_historical_series("T10Y2Y", years=5)
@@ -126,7 +126,7 @@ with col2:
 st.divider()
 
 # Historical Comparison
-st.markdown("## 📈 Current vs Historical Crisis Conditions")
+st.markdown("## Current vs Historical Crisis Conditions")
 st.caption("How today's macro environment compares to pre-crisis conditions")
 
 from src.data_loader import load_events
@@ -146,7 +146,7 @@ for event in events:
 
 # Add current
 comparison_data.append({
-    "Event": "📍 TODAY",
+    "Event": "TODAY",
     "Inflation": snapshot.get("inflation"),
     "Fed Rate": snapshot.get("fed_funds_rate"),
     "Unemployment": snapshot.get("unemployment"),
@@ -186,4 +186,4 @@ layout = get_plotly_layout(
 fig.update_layout(layout)
 st.plotly_chart(fig, use_container_width=True)
 
-st.info("💡 **Interpretation**: Today's position on this map helps identify which historical crises had similar macro conditions. Events in your quadrant are the most relevant precedents.")
+st.info(" **Interpretation**: Today's position on this map helps identify which historical crises had similar macro conditions. Events in your quadrant are the most relevant precedents.")

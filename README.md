@@ -7,33 +7,33 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.31-red.svg)](https://streamlit.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-🔗 **[Live Demo](YOUR_STREAMLIT_URL_HERE)** | 📖 **[Methodology](#methodology)**
+ **[Live Demo](YOUR_STREAMLIT_URL_HERE)** |**[Methodology](#methodology)**
 
 ---
 
-## 🎯 Overview
+## Overview
 
 MacroLens helps investors, analysts, and researchers understand how markets respond to major economic events. By combining a curated database of 15+ historical crises with economic theory frameworks and similarity-based pattern matching, it provides probabilistic forecasts with uncertainty bands.
 
-## ✨ Features
+## Features
 
-### 📊 Event Explorer
+### Event Explorer
 Deep-dive into major historical events (2008 GFC, COVID-19, Oil Crises, Fed Policy Shifts) with impact data across 14 asset classes and 5 time horizons.
 
-### 🔮 Scenario Builder
+### Scenario Builder
 Input current/hypothetical macro conditions → Find most similar historical events → Get weighted predictions with confidence bands.
 
-### 📈 Portfolio Stress Test
+### Portfolio Stress Test
 Upload your portfolio allocation and see how it would have performed during historical crises.
 
-### 📚 Economic Theory Engine
+### Economic Theory Engine
 Learn the frameworks (Flight to Quality, Stagflation, Monetary Transmission) behind the predictions.
 
-## 🖼️ Screenshots
+## Screenshots
 
 [Add screenshots after deployment]
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend/Backend**: Streamlit
 - **Data Processing**: Pandas, NumPy
@@ -85,7 +85,7 @@ Email: alex.muelas6@gmail.com
 
 ⭐ If you find this useful, please star the repo!
 
-## 📦 Installation
+## Installation
 
 ```bash
 # Clone the repo

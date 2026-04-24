@@ -13,7 +13,7 @@ st.divider()
 
 # Theory sections
 for theory_id, theory in THEORIES.items():
-    with st.expander(f"📖 {theory['name']}", expanded=False):
+    with st.expander(f"{theory['name']}", expanded=False):
         st.markdown(f"### {theory['description']}")
         st.write("")
         st.markdown("**Market Implications:**")
@@ -33,7 +33,7 @@ for theory_id, theory in THEORIES.items():
 st.divider()
 
 # Key concepts
-st.markdown("## 🎓 Key Concepts")
+st.markdown("## Key Concepts")
 
 concepts = [
     {
@@ -67,7 +67,6 @@ for i, concept in enumerate(concepts):
     with cols[i % 2]:
         st.markdown(f"""
         <div class="feature-card">
-            <div class="feature-icon">{concept['icon']}</div>
             <div class="feature-title">{concept['title']}</div>
             <div class="feature-description">{concept['description']}</div>
         </div>
