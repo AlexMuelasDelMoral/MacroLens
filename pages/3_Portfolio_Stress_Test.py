@@ -245,7 +245,7 @@ if run_test:
             return f"color: {color}; font-weight: 600; font-family: JetBrains Mono;"
         
         st.dataframe(
-            pivot.style.applymap(color_returns).format("{:+.2f}%"),
+            pivot.style.map(color_returns).format("{:+.2f}%"),
             use_container_width=True,
             height=400
         )
