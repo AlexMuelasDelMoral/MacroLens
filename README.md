@@ -260,9 +260,9 @@ MIT License — see [LICENSE](LICENSE) file for details.
 
 ## Author
 
-**[Your Name]**
+**[Alex Muelas Del Moral]**
 
-[GitHub](https://github.com/YOUR_USERNAME) · [LinkedIn](https://linkedin.com/in/YOUR_PROFILE) · [Email](mailto:your@email.com)
+[GitHub](https://github.com/alexmuelasdelmoral) · [LinkedIn](https://linkedin.com/in/alexmuelasdelmoral) · [Email](alex.muelas6@gmail.com)
 
 ---
 
