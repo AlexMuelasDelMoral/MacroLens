@@ -212,3 +212,26 @@ ASSET_CHARACTERISTICS = {
     "hedge_fund_idx": {"beta": 0.4, "type": "alt", "rate_sens": -0.3, "inflation_sens": 0.0, "crisis_beta": 0.5},
     "private_equity": {"beta": 1.1, "type": "alt", "rate_sens": -0.8, "inflation_sens": -0.2, "crisis_beta": 1.2},
 }
+def load_data_quality():
+    """Load data quality metadata (real vs estimated vs curated)."""
+    quality_path = DATA_DIR / "data_quality.json"
+    if not quality_path.exists():
+        return {}
+    with open(quality_path, "r") as f:
+        return json.load(f)
+
+
+def get_data_quality_for_event(event_id):
+    """Get quality breakdown for a specific event."""
+    quality = load_data_quality()
+    return quality.get(event_id, {})
+
+
+def calculate_quality_score(event_id):
+    """Returns dict with counts of each quality type."""
+    quality = get_data_quality_for_event(event_id)
+    counts = {"real": 0, "curated": 0, "estimated": 0, "missing": 0}
+    for asset_data in quality.values():
+        for h, q in asset_data.items():
+            counts[q] = counts.get(q, 0) + 1
+    return counts

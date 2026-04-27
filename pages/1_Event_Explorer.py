@@ -5,7 +5,8 @@ from src.data_loader import (
     load_events, load_impacts, get_asset_classes,
     ASSET_LABELS, ASSET_CATEGORIES
 )
-from src.visualizations import plot_impact_bar, plot_multi_asset_heatmap
+from src.visualizations import plot_impact_bar, plot_multi_asset_heatmap_with_quality
+from src.data_loader import load_data_quality
 from src.theory_engine import get_relevant_theories, get_asset_narrative
 
 st.set_page_config(page_title="Event Explorer", layout="wide")
@@ -71,12 +72,64 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# Add this import at the top
+from src.data_loader import calculate_quality_score
+
 # Event Metadata
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Year", selected_event["year"])
 col2.metric("Duration", f"{selected_event['duration_months']} months")
 col3.metric("Geography", selected_event["geography"])
 col4.metric("Start Date", selected_event["start_date"])
+
+# ============ DATA QUALITY BANNER ============
+quality = calculate_quality_score(selected_id)
+total = sum(quality.values())
+
+if total > 0:
+    real_pct = (quality.get("real", 0) / total) * 100
+    curated_pct = (quality.get("curated", 0) / total) * 100
+    estimated_pct = (quality.get("estimated", 0) / total) * 100
+    missing_pct = (quality.get("missing", 0) / total) * 100
+
+    st.markdown('<div class="section-label">DATA QUALITY</div>', unsafe_allow_html=True)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Real Market Data", f"{real_pct:.0f}%",
+                f"{quality.get('real', 0)} cells")
+    col2.metric("Curated", f"{curated_pct:.0f}%",
+                f"{quality.get('curated', 0)} cells")
+    col3.metric("Estimated", f"{estimated_pct:.0f}%",
+                f"{quality.get('estimated', 0)} cells")
+    col4.metric("Unavailable", f"{missing_pct:.0f}%",
+                f"{quality.get('missing', 0)} cells")
+
+    if real_pct >= 80:
+        quality_label = "HIGH CONFIDENCE"
+        quality_color = "#00F5A0"
+        quality_msg = "Predictions backed by real Yahoo Finance historical data"
+    elif real_pct >= 50:
+        quality_label = "MEDIUM CONFIDENCE"
+        quality_color = "#FFB547"
+        quality_msg = "Mix of real data and rule-based estimates for older instruments"
+    else:
+        quality_label = "LOW CONFIDENCE"
+        quality_color = "#FF3B6B"
+        quality_msg = "Many instruments did not exist during this period; estimates rely on economic theory"
+
+    st.markdown(f"""
+    <div style="padding: 0.85rem 1.25rem; background: rgba(10, 22, 40, 0.6);
+                border-left: 3px solid {quality_color}; border-radius: 4px; 
+                margin: 1rem 0 1.5rem 0; font-family: 'JetBrains Mono', monospace;">
+        <div style="color: {quality_color}; font-weight: 700; letter-spacing: 0.15em; 
+                    font-size: 0.7rem; margin-bottom: 0.25rem;">
+            {quality_label}
+        </div>
+        <div style="color: #B8C0DC; font-size: 0.85rem;">
+            {quality_msg}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Triggers
 st.markdown("### Key Triggers")
@@ -143,7 +196,8 @@ if selected_id in impacts:
         }
         filtered_impacts = {selected_id: filtered_event_impacts}
     
-    heatmap = plot_multi_asset_heatmap(filtered_impacts, selected_id)
+    data_quality = load_data_quality()
+    heatmap = plot_multi_asset_heatmap_with_quality(impacts, selected_id, data_quality)
     st.plotly_chart(heatmap, use_container_width=True)
     
     # Individual asset drill-down

@@ -332,3 +332,80 @@ def plot_correlation_matrix(data_dict):
     )
     fig.update_layout(layout)
     return fig
+def plot_multi_asset_heatmap_with_quality(impacts, event_id, data_quality=None):
+    """Heatmap with quality indicators — real data shown solid, estimates shown muted."""
+    event_impacts = impacts.get(event_id, {})
+    horizons = ["1m", "3m", "6m", "1y", "2y"]
+    
+    data = []
+    assets = []
+    quality_data = []
+    
+    event_quality = (data_quality or {}).get(event_id, {})
+    
+    for asset, values in event_impacts.items():
+        row = [values.get(h) for h in horizons]
+        if any(v is not None for v in row):
+            data.append(row)
+            from src.data_loader import ASSET_LABELS
+            assets.append(ASSET_LABELS.get(asset, asset))
+            
+            # Track quality for each cell
+            asset_q = event_quality.get(asset, {})
+            quality_row = [asset_q.get(h, "unknown") for h in horizons]
+            quality_data.append(quality_row)
+    
+    # Build text with quality marker
+    text_data = []
+    for row, q_row in zip(data, quality_data):
+        text_row = []
+        for v, q in zip(row, q_row):
+            if v is None:
+                text_row.append("—")
+            else:
+                # Marker: solid for real, dot for estimated
+                marker = "" if q in ("real", "curated") else " *"
+                text_row.append(f"{v:+.1f}{marker}")
+        text_data.append(text_row)
+    
+    custom_colorscale = [
+        [0, '#FF3B6B'],
+        [0.25, '#8B1A3C'],
+        [0.5, '#0A1628'],
+        [0.75, '#0088AA'],
+        [1, '#00F5A0']
+    ]
+    
+    import plotly.graph_objects as go
+    from src.styles import get_plotly_layout
+    
+    fig = go.Figure(data=go.Heatmap(
+        z=data,
+        x=["1M", "3M", "6M", "1Y", "2Y"],
+        y=assets,
+        colorscale=custom_colorscale,
+        zmid=0,
+        text=text_data,
+        texttemplate="%{text}",
+        textfont={"size": 10, "family": "JetBrains Mono", "color": "#E4E8F1"},
+        hoverongaps=False,
+        colorbar=dict(
+            title=dict(text="Return %", font=dict(color="#E4E8F1")),
+            tickfont=dict(color="#8B92B0"),
+            bgcolor="rgba(0, 8, 20, 0.6)",
+            bordercolor="rgba(30, 42, 63, 0.6)",
+            borderwidth=1
+        )
+    ))
+    
+    layout = get_plotly_layout(
+        title=dict(
+            text="<b>ASSET CLASS IMPACT MATRIX</b><br><span style='font-size:10px;color:#8B92B0'>* = estimated value</span>",
+            font=dict(size=14, color='#E4E8F1', family='JetBrains Mono')
+        ),
+        xaxis_title="TIME HORIZON",
+        height=max(550, len(assets) * 22),
+        margin=dict(l=160, r=40, t=80, b=40)
+    )
+    fig.update_layout(layout)
+    return fig
