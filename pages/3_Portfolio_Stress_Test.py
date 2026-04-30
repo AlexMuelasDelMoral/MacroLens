@@ -5,6 +5,7 @@ from src.styles import apply_custom_theme, get_plotly_layout
 from src.data_loader import load_events, load_impacts, ASSET_LABELS, ASSET_CATEGORIES
 from src.visualizations import plot_portfolio_performance
 from src.report_generator import generate_portfolio_report
+from src.portfolio_parser import parse_portfolio, PortfolioParseError
 
 st.set_page_config(page_title="Portfolio Stress Test", layout="wide")
 apply_custom_theme()
@@ -15,18 +16,34 @@ st.caption("Simulate your portfolio's behavior under 30 historical crisis scenar
 
 st.divider()
 
-# Preset portfolios with full asset coverage
-PRESETS = {
-    "Custom": {},
-    "60/40 Classic": {"sp500": 60, "us_10y_treasury": 40},
-    "Aggressive Growth": {"sp500": 35, "nasdaq": 25, "tech": 15, "emerging_markets": 15, "bitcoin": 10},
-    "Permanent Portfolio": {"sp500": 25, "us_30y_treasury": 25, "gold": 25, "us_tbill_3m": 25},
-    "All-Weather (Dalio)": {"sp500": 30, "us_30y_treasury": 40, "us_10y_treasury": 15, "gold": 7.5, "basic_materials": 7.5},
-    "Global Diversified": {"sp500": 25, "developed_ex_us": 15, "emerging_markets": 10, "us_10y_treasury": 20, "corporate_ig": 10, "gold": 10, "reits_global": 10},
-    "Defensive": {"consumer_staples": 15, "utilities": 15, "healthcare": 15, "us_10y_treasury": 25, "gold": 15, "us_tbill_3m": 15},
-    "Crypto Heavy": {"bitcoin": 40, "ethereum": 20, "sp500": 20, "gold": 10, "us_10y_treasury": 10},
-    "Commodity Bull": {"oil_wti": 20, "gold": 20, "silver": 10, "copper": 10, "agriculture": 10, "energy": 15, "basic_materials": 15},
-}
+from src.constants import PRESET_PORTFOLIOS as PRESETS
+
+@st.cache_data(show_spinner=False)
+def _parse_cached(text: str, label_signature: tuple[tuple[str, str], ...]) -> dict:
+    """Cache parses keyed on input text plus the asset universe.
+
+    The label_signature tuple makes the cache key hashable and invalidates
+    automatically if ASSET_LABELS changes between runs.
+    """
+    labels = dict(label_signature)
+    result = parse_portfolio(text, labels)
+    return {
+        "weights": result.weights,
+        "warnings": list(result.warnings),
+        "invalid": list(result.invalid_entries),
+        "original_sum": result.original_sum,
+        "was_normalized": result.was_normalized,
+    }
+
+
+def _apply_to_session_state(weights_fraction: dict[str, float]) -> None:
+    """Push parsed weights into the port_* session state keys so the
+    category tabs render with the new allocation on rerun."""
+    for asset_id in ASSET_LABELS:
+        st.session_state[f"port_{asset_id}"] = 0.0
+    for asset_id, fraction in weights_fraction.items():
+        st.session_state[f"port_{asset_id}"] = round(fraction * 100.0, 2)
+
 
 st.markdown("## Build Your Portfolio")
 
@@ -34,17 +51,58 @@ col1, col2 = st.columns([2, 1])
 with col1:
     preset = st.selectbox("Preset Portfolio", list(PRESETS.keys()))
 with col2:
-    if st.button("🔄 Reset Portfolio"):
+    if st.button("Reset Portfolio"):
         for key in list(st.session_state.keys()):
             if key.startswith("port_"):
                 del st.session_state[key]
         st.rerun()
 
+with st.expander("Bulk paste portfolio", expanded=False):
+    st.caption(
+        "Paste an entire portfolio in any of these formats. Mix freely, "
+        "one entry per line. Weights auto-scale to 100 percent."
+    )
+    st.markdown(
+        "- Space:  `sp500 35`  \n"
+        "- Comma:  `sp500,35`  \n"
+        "- Colon with percent:  `sp500: 35%`  \n"
+        "- Tab-separated (Excel paste):  `sp500\\t35`  \n"
+        "- JSON:  `{\"sp500\": 35, \"bitcoin\": 10}`  \n"
+        "Use either the asset ID (`sp500`, `us_10y_treasury`) or the "
+        "display name (`S&P 500`, `US 10Y Treasury`)."
+    )
+    pasted = st.text_area(
+        "Portfolio definition",
+        height=180,
+        placeholder="sp500 35\nnasdaq 20\nbitcoin 10\ngold 25\nus_10y_treasury 10",
+        key="bulk_paste_text",
+        label_visibility="collapsed",
+    )
+    apply_clicked = st.button("Apply pasted portfolio", type="primary", key="bulk_apply")
+
+    if apply_clicked:
+        if not pasted.strip():
+            st.error("Paste a portfolio above before applying.")
+        else:
+            try:
+                label_signature = tuple(sorted(ASSET_LABELS.items()))
+                result = _parse_cached(pasted, label_signature)
+            except PortfolioParseError as exc:
+                st.error(f"Could not parse: {exc}")
+            else:
+                for message in result["warnings"]:
+                    st.warning(message)
+                _apply_to_session_state(result["weights"])
+                st.success(
+                    f"Loaded {len(result['weights'])} positions. "
+                    "Refine values in the category tabs below."
+                )
+                st.rerun()
+
 st.caption("Expand categories below to allocate across 45 asset classes")
 
 portfolio = {}
 
-# Render by category using tabs
 category_names = list(ASSET_CATEGORIES.keys())
 tabs = st.tabs([f"{cat}" for cat in category_names])
 
@@ -65,12 +123,11 @@ for i, (tab, category) in enumerate(zip(tabs, category_names)):
 
 total = sum(portfolio.values())
 
-# Allocation status bar
 st.markdown("### Allocation Summary")
 col1, col2 = st.columns([3, 1])
 
 with col1:
-    st.progress(min(total / 100, 1.0), 
+    st.progress(min(total / 100, 1.0),
                 text=f"Total Allocated: {total:.1f}% / 100%")
 
 with col2:
@@ -79,19 +136,18 @@ with col2:
     else:
         st.success("100% Allocated")
 
-# Active allocation pie chart
 if total > 0:
     active_portfolio = {k: v for k, v in portfolio.items() if v > 0}
-    
+
     col1, col2 = st.columns([2, 1])
-    
+
     with col1:
         fig = go.Figure(data=[go.Pie(
             labels=[ASSET_LABELS[k] for k in active_portfolio.keys()],
             values=list(active_portfolio.values()),
             hole=0.6,
             marker=dict(
-                colors=['#00D4FF', '#7C3AED', '#00F5A0', '#FFB547', '#FF3B6B', 
+                colors=['#00D4FF', '#7C3AED', '#00F5A0', '#FFB547', '#FF3B6B',
                          '#0066FF', '#FF6B00', '#A78BFA', '#06B6D4', '#F472B6',
                          '#FFD700', '#FF69B4', '#00FA9A', '#1E90FF', '#FFA07A'],
                 line=dict(color='#0A0E27', width=2)
@@ -100,7 +156,7 @@ if total > 0:
             textposition='outside',
             textinfo='label+percent'
         )])
-        
+
         layout = get_plotly_layout(
             title="<b>Portfolio Allocation</b>",
             height=500,
@@ -113,10 +169,9 @@ if total > 0:
         )]
         fig.update_layout(layout)
         st.plotly_chart(fig, use_container_width=True)
-    
+
     with col2:
         st.markdown("### Holdings")
-        # Sort by allocation
         sorted_holdings = sorted(active_portfolio.items(), key=lambda x: -x[1])
         for asset_id, weight in sorted_holdings[:10]:
             st.markdown(f"""
@@ -130,13 +185,11 @@ if total > 0:
 
 st.divider()
 
-# Stress Test
 st.markdown("## Select Stress Test Scenarios")
 
 events = load_events()
 impacts = load_impacts()
 
-# Group events by category
 events_by_category = {}
 for e in events:
     if e['id'] in impacts:
@@ -154,12 +207,11 @@ with col1:
 with col2:
     severity_min = st.slider("Min severity", 1, 10, 1)
 
-# Filter events
 filtered_events = [e for e in events if e['id'] in impacts and e['severity'] >= severity_min]
 if category_filter:
     filtered_events = [e for e in filtered_events if e['category'] in category_filter]
 
-event_options = {f"{e['name']} ({e['year']}) — Severity {e['severity']}/10": e['id'] 
+event_options = {f"{e['name']} ({e['year']}) — Severity {e['severity']}/10": e['id']
                  for e in sorted(filtered_events, key=lambda x: -x['severity'])}
 
 selected_events = st.multiselect(
@@ -182,16 +234,16 @@ if run_test:
     else:
         st.divider()
         st.markdown("## Stress Test Results")
-        
+
         results = []
         for event_display_name in selected_events:
             event_id = event_options[event_display_name]
             event_impacts = impacts.get(event_id, {})
-            
+
             for horizon in ["1m", "3m", "6m", "1y", "2y"]:
                 weighted_return = 0
                 total_weight_applied = 0
-                
+
                 for asset, weight in portfolio.items():
                     if weight == 0 or asset not in event_impacts:
                         continue
@@ -200,31 +252,28 @@ if run_test:
                         continue
                     weighted_return += (weight / 100) * asset_return
                     total_weight_applied += weight
-                
-                # Normalize if some assets had no data
+
                 if total_weight_applied > 0 and total_weight_applied < 100:
                     weighted_return = weighted_return * (100 / total_weight_applied)
-                
+
                 results.append({
                     "Event Full": event_display_name,
                     "Horizon": horizon.upper(),
                     "Return (%)": round(weighted_return, 2)
                 })
-        
+
         results_df = pd.DataFrame(results)
-        
-        # Performance chart
+
         fig = plot_portfolio_performance(results_df, selected_events)
         st.plotly_chart(fig, use_container_width=True)
-        
-        # Summary metrics
+
         st.markdown("### Key Metrics")
-        
+
         worst = results_df.loc[results_df["Return (%)"].idxmin()]
         best = results_df.loc[results_df["Return (%)"].idxmax()]
         avg = results_df["Return (%)"].mean()
         median = results_df["Return (%)"].median()
-        
+
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("Worst Case", f"{worst['Return (%)']:+.2f}%",
                     f"{worst['Event Full'][:30]}...", delta_color="inverse")
@@ -232,25 +281,23 @@ if run_test:
                     f"{best['Event Full'][:30]}...")
         col3.metric("Average Return", f"{avg:+.2f}%")
         col4.metric("Median Return", f"{median:+.2f}%")
-        
-        # Detailed table
+
         st.markdown("### Detailed Results Matrix")
         pivot = results_df.pivot(index="Event Full", columns="Horizon", values="Return (%)")
         pivot = pivot[["1M", "3M", "6M", "1Y", "2Y"]]
-        
+
         def color_returns(val):
             if pd.isna(val):
                 return ""
             color = "#00F5A0" if val > 0 else "#FF3B6B"
             return f"color: {color}; font-weight: 600; font-family: JetBrains Mono;"
-        
+
         st.dataframe(
             pivot.style.map(color_returns).format("{:+.2f}%"),
             use_container_width=True,
             height=400
         )
-        
-        # PDF Export
+
         st.divider()
         try:
             pdf_buffer = generate_portfolio_report(
@@ -260,7 +307,7 @@ if run_test:
                 total_impact=avg
             )
             st.download_button(
-                label="⬇️ Download PDF Report",
+                label="Download PDF Report",
                 data=pdf_buffer,
                 file_name=f"macrolens_stress_test_{pd.Timestamp.now().strftime('%Y%m%d')}.pdf",
                 mime="application/pdf",
