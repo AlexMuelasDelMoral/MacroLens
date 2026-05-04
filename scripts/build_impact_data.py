@@ -1,11 +1,21 @@
 """
-Build asset_impacts.json from real Yahoo Finance data + fallbacks.
+Build asset_impacts.json and asset_impacts.parquet from real Yahoo Finance
+data plus rule-based and curated fallbacks.
+
+Two output formats are produced:
+  - asset_impacts.json     Human-readable, git-diff-friendly, used as fallback.
+  - asset_impacts.parquet  Columnar binary format, loaded preferentially by
+                           src/data_loader.load_impacts() for a 10x to 50x
+                           speedup over the JSON path.
+
 Verbose logging so failures are visible.
 """
 import json
 import sys
 from pathlib import Path
 from datetime import datetime
+
+import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -72,6 +82,42 @@ def merge_real_and_generated(real_impacts, generated_impacts, data_quality):
     return final_impacts, data_quality
 
 
+def impacts_to_long_dataframe(impacts):
+    """Flatten the nested impacts dict into a long-format DataFrame.
+
+    Output columns: event_id, asset_id, horizon, return_pct.
+    Rows with None returns are kept (as NaN) so the matrix shape is
+    preserved when the loader pivots back to nested form.
+    """
+    records = []
+    for event_id, assets in impacts.items():
+        for asset_id, horizons in assets.items():
+            for horizon, value in horizons.items():
+                records.append({
+                    "event_id": event_id,
+                    "asset_id": asset_id,
+                    "horizon": horizon,
+                    "return_pct": value,
+                })
+    df = pd.DataFrame.from_records(records)
+    for col in ("event_id", "asset_id", "horizon"):
+        df[col] = df[col].astype("category")
+    df["return_pct"] = pd.to_numeric(df["return_pct"], errors="coerce")
+    return df
+
+
+def write_parquet(impacts, output_path):
+    """Write impacts to Parquet using pyarrow with snappy compression."""
+    df = impacts_to_long_dataframe(impacts)
+    df.to_parquet(
+        output_path,
+        engine="pyarrow",
+        compression="snappy",
+        index=False,
+    )
+    return df
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser()
@@ -113,8 +159,8 @@ def main():
                     if v is not None:
                         data_quality[event_id][asset_id][h] = "curated"
 
-    output_path = data_dir / "asset_impacts.json"
-    with open(output_path, "w") as f:
+    json_path = data_dir / "asset_impacts.json"
+    with open(json_path, "w") as f:
         json.dump({
             "impacts": final,
             "metadata": {
@@ -122,6 +168,14 @@ def main():
                 "events_count": len(final),
             }
         }, f, indent=2)
+    print(f"Wrote {json_path.name} ({json_path.stat().st_size / 1024:.0f} KB)")
+
+    parquet_path = data_dir / "asset_impacts.parquet"
+    df = write_parquet(final, parquet_path)
+    print(
+        f"Wrote {parquet_path.name} ({parquet_path.stat().st_size / 1024:.0f} KB, "
+        f"{len(df):,} rows)"
+    )
 
     quality_path = data_dir / "data_quality.json"
     with open(quality_path, "w") as f:

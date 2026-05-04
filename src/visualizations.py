@@ -153,72 +153,131 @@ def plot_similarity_scores(similar_events):
 
 
 def plot_prediction_with_uncertainty(predictions, asset_class):
-    """Line chart with confidence bands for predictions."""
+    """Line chart with confidence bands for similarity-weighted predictions.
+
+    Shows three layers of uncertainty:
+      - Outer band: full historical range (min to max across analogs)
+      - Inner band: one standard deviation around the weighted mean
+      - Centre line: similarity-weighted expected return
+      - Annotation: number of historical analogs per horizon
+    """
     horizons = ["1m", "3m", "6m", "1y", "2y"]
     horizon_labels = ["1M", "3M", "6M", "1Y", "2Y"]
-    
-    expected = [predictions[h]["expected"] if predictions[h] else None for h in horizons]
-    mins = [predictions[h]["min"] if predictions[h] else None for h in horizons]
-    maxs = [predictions[h]["max"] if predictions[h] else None for h in horizons]
-    
+
+    expected = [predictions[h]["expected"] if predictions.get(h) else None for h in horizons]
+    mins     = [predictions[h]["min"]      if predictions.get(h) else None for h in horizons]
+    maxs     = [predictions[h]["max"]      if predictions.get(h) else None for h in horizons]
+    stds     = [predictions[h]["std"]      if predictions.get(h) else None for h in horizons]
+    samples  = [predictions[h]["n_samples"] if predictions.get(h) else 0   for h in horizons]
+
+    std_upper = [
+        round(e + s, 2) if e is not None and s is not None else None
+        for e, s in zip(expected, stds)
+    ]
+    std_lower = [
+        round(e - s, 2) if e is not None and s is not None else None
+        for e, s in zip(expected, stds)
+    ]
+
     fig = go.Figure()
-    
-    # Uncertainty band with glow
+
+    # Outer band: full historical range
     fig.add_trace(go.Scatter(
         x=horizon_labels + horizon_labels[::-1],
         y=maxs + mins[::-1],
-        fill='toself',
-        fillcolor='rgba(0, 212, 255, 0.15)',
-        line=dict(color='rgba(255,255,255,0)'),
-        name='Historical Range',
+        fill="toself",
+        fillcolor="rgba(0, 212, 255, 0.07)",
+        line=dict(color="rgba(255,255,255,0)"),
+        name="Historical range",
         showlegend=True,
-        hoverinfo='skip'
+        hoverinfo="skip",
     ))
-    
-    # Min line (dashed)
+
+    # Inner band: one standard deviation
+    fig.add_trace(go.Scatter(
+        x=horizon_labels + horizon_labels[::-1],
+        y=std_upper + std_lower[::-1],
+        fill="toself",
+        fillcolor="rgba(0, 212, 255, 0.18)",
+        line=dict(color="rgba(255,255,255,0)"),
+        name="1 std deviation",
+        showlegend=True,
+        hoverinfo="skip",
+    ))
+
+    # Worst case line
     fig.add_trace(go.Scatter(
         x=horizon_labels,
         y=mins,
-        mode='lines',
-        name='Worst Case',
-        line=dict(color='#FF3B6B', width=1, dash='dot'),
-        hovertemplate='%{y:.1f}%<extra></extra>'
+        mode="lines",
+        name="Worst case",
+        line=dict(color="#FF3B6B", width=1, dash="dot"),
+        hovertemplate="%{y:.1f}%<extra>Worst case</extra>",
     ))
-    
-    # Max line (dashed)
+
+    # Best case line
     fig.add_trace(go.Scatter(
         x=horizon_labels,
         y=maxs,
-        mode='lines',
-        name='Best Case',
-        line=dict(color='#00F5A0', width=1, dash='dot'),
-        hovertemplate='%{y:.1f}%<extra></extra>'
+        mode="lines",
+        name="Best case",
+        line=dict(color="#00F5A0", width=1, dash="dot"),
+        hovertemplate="%{y:.1f}%<extra>Best case</extra>",
     ))
-    
-    # Expected line with neon effect
+
+    # Expected return line
     fig.add_trace(go.Scatter(
         x=horizon_labels,
         y=expected,
-        mode='lines+markers',
-        name='Expected',
-        line=dict(color='#00D4FF', width=4),
-        marker=dict(size=12, color='#00D4FF', 
-                    line=dict(color='#FFFFFF', width=2)),
-        hovertemplate='<b>%{y:.2f}%</b><extra></extra>'
+        mode="lines+markers",
+        name="Expected return",
+        line=dict(color="#00D4FF", width=4),
+        marker=dict(size=12, color="#00D4FF", line=dict(color="#FFFFFF", width=2)),
+        hovertemplate="<b>%{y:.2f}%</b><extra>Expected</extra>",
     ))
-    
-    fig.add_hline(y=0, line_dash="dash", line_color="rgba(139, 146, 176, 0.5)", line_width=1)
-    
+
+    fig.add_hline(
+        y=0,
+        line_dash="dash",
+        line_color="rgba(139, 146, 176, 0.5)",
+        line_width=1,
+    )
+
+    # Sample count annotations below each horizon point
+    for label, n, exp in zip(horizon_labels, samples, expected):
+        if exp is None:
+            continue
+        confidence = (
+            "High" if n >= 8
+            else "Med" if n >= 4
+            else "Low"
+        )
+        color = (
+            "#00F5A0" if n >= 8
+            else "#FFB547" if n >= 4
+            else "#FF3B6B"
+        )
+        fig.add_annotation(
+            x=label,
+            y=exp,
+            text=f"n={n} {confidence}",
+            showarrow=False,
+            yshift=22,
+            font=dict(size=10, color=color, family="JetBrains Mono"),
+        )
+
     layout = get_plotly_layout(
         title=dict(
-            text=f"<b>Projection: {ASSET_LABELS.get(asset_class, asset_class)}</b>",
-            font=dict(size=18, color='#E4E8F1')
+            text=f"<b>Projection: {ASSET_LABELS.get(asset_class, asset_class)}</b>"
+                 f"<br><span style='font-size:11px;color:#8B92B0'>"
+                 f"Shaded area shows 1 std deviation. n = number of historical analogs.</span>",
+            font=dict(size=16, color="#E4E8F1"),
         ),
-        xaxis_title="Time Horizon",
-        yaxis_title="Expected Return (%)",
-        height=450,
-        hovermode='x unified',
-        margin=dict(l=40, r=40, t=80, b=40)
+        xaxis_title="Time horizon",
+        yaxis_title="Expected return (%)",
+        height=480,
+        hovermode="x unified",
+        margin=dict(l=40, r=40, t=100, b=40),
     )
     fig.update_layout(layout)
     return fig

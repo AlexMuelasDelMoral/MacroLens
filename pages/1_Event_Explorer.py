@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from src.styles import apply_custom_theme
+from src.styles import apply_custom_theme, render_page_header
 from src.data_loader import (
     load_events, load_impacts, get_asset_classes,
     ASSET_LABELS, ASSET_CATEGORIES
@@ -12,10 +12,11 @@ from src.theory_engine import get_relevant_theories, get_asset_narrative
 st.set_page_config(page_title="Event Explorer", layout="wide")
 apply_custom_theme()
 
-st.markdown('<div class="section-label">HISTORICAL ANALYSIS</div>', unsafe_allow_html=True)
-st.markdown("# Event Explorer")
-st.caption("Deep dive into historical economic events and their market impacts across 45 asset classes")
-
+render_page_header(
+    label="HISTORICAL ANALYSIS",
+    title="Event Explorer",
+    subtitle="Deep dive into historical economic events and their market impacts across 45 asset classes",
+)
 st.divider()
 
 events = load_events()
@@ -198,7 +199,7 @@ if selected_id in impacts:
     
     data_quality = load_data_quality()
     heatmap = plot_multi_asset_heatmap_with_quality(impacts, selected_id, data_quality)
-    st.plotly_chart(heatmap, use_container_width=True)
+    st.plotly_chart(heatmap, width='stretch')
     
     # Individual asset drill-down
     st.markdown("## Asset Class Deep Dive")
@@ -246,7 +247,7 @@ if selected_id in impacts:
             selected_asset,
             selected_event["name"]
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
     
     with col2:
         st.markdown("### 📖 Narrative")

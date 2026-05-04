@@ -1,14 +1,15 @@
 import streamlit as st
-from src.styles import apply_custom_theme
+from src.styles import apply_custom_theme, render_page_header
 from src.theory_engine import THEORIES
 
 st.set_page_config(page_title="Learn", layout="wide")
 apply_custom_theme()
 
-st.markdown('<div class="section-label"> EDUCATION</div>', unsafe_allow_html=True)
-st.markdown("# Economic Theory Library")
-st.caption("Understanding the frameworks that explain market behavior")
-
+render_page_header(
+    label="EDUCATION",
+    title="Learn",
+    subtitle="Understand the economic frameworks and concepts behind MacroLens",
+)
 st.divider()
 
 # Theory sections

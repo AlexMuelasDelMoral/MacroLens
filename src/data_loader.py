@@ -33,8 +33,25 @@ def load_events() -> list[dict[str, Any]]:
 def load_impacts() -> dict[str, dict[str, dict[str, float]]]:
     """Load asset impact data per event. Cached for one hour.
 
-    Returns a nested mapping: event_id -> asset_id -> horizon -> return_pct.
+    Prefers asset_impacts.parquet for speed and falls back to
+    asset_impacts.json if Parquet is unavailable. Both formats produce
+    the same nested mapping: event_id -> asset_id -> horizon -> return_pct.
     """
+    parquet_path = DATA_DIR / "asset_impacts.parquet"
+    if parquet_path.exists():
+        df = pd.read_parquet(parquet_path, engine="pyarrow")
+        impacts: dict[str, dict[str, dict[str, float]]] = {}
+        for event_id, asset_id, horizon, value in zip(
+            df["event_id"].astype(str),
+            df["asset_id"].astype(str),
+            df["horizon"].astype(str),
+            df["return_pct"],
+        ):
+            impacts.setdefault(event_id, {}).setdefault(asset_id, {})[horizon] = (
+                None if pd.isna(value) else float(value)
+            )
+        return impacts
+
     with open(DATA_DIR / "asset_impacts.json", "r") as f:
         data = json.load(f)
     return data["impacts"]
@@ -254,3 +271,35 @@ ASSET_CHARACTERISTICS: dict[str, dict[str, Any]] = {
     "hedge_fund_idx": {"beta": 0.4, "type": "alt", "rate_sens": -0.3, "inflation_sens": 0.0, "crisis_beta": 0.5},
     "private_equity": {"beta": 1.1, "type": "alt", "rate_sens": -0.8, "inflation_sens": -0.2, "crisis_beta": 1.2},
 }
+
+def get_data_last_updated() -> dict[str, str]:
+    """Return last-modified timestamps for key data files.
+
+    Checks Parquet first, falls back to JSON. Returns human-readable
+    strings for display in the UI.
+    """
+    from datetime import datetime
+
+    results: dict[str, str] = {}
+    fmt = "%Y-%m-%d %H:%M UTC"
+
+    parquet = DATA_DIR / "asset_impacts.parquet"
+    json_path = DATA_DIR / "asset_impacts.json"
+    if parquet.exists():
+        ts = datetime.utcfromtimestamp(parquet.stat().st_mtime)
+        results["Impact data"] = f"{ts.strftime(fmt)} (Parquet)"
+    elif json_path.exists():
+        ts = datetime.utcfromtimestamp(json_path.stat().st_mtime)
+        results["Impact data"] = f"{ts.strftime(fmt)} (JSON)"
+
+    quality = DATA_DIR / "data_quality.json"
+    if quality.exists():
+        ts = datetime.utcfromtimestamp(quality.stat().st_mtime)
+        results["Data quality"] = ts.strftime(fmt)
+
+    events = DATA_DIR / "events.json"
+    if events.exists():
+        ts = datetime.utcfromtimestamp(events.stat().st_mtime)
+        results["Events database"] = ts.strftime(fmt)
+
+    return results

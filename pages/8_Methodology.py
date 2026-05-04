@@ -1,13 +1,16 @@
 import streamlit as st
-from src.styles import apply_custom_theme
-from src.data_loader import load_events, get_asset_classes, calculate_quality_score
+from src.styles import apply_custom_theme, render_page_header
+from src.data_loader import load_events, get_asset_classes, calculate_quality_score, get_data_last_updated
 
 st.set_page_config(page_title="Methodology", layout="wide")
 apply_custom_theme()
 
 # ============ HEADER ============
-st.markdown('<div class="section-label">DOCUMENTATION</div>', unsafe_allow_html=True)
-st.markdown("# Methodology")
+render_page_header(
+    label="DOCUMENTATION",
+    title="Methodology",
+    subtitle="How MacroLens generates predictions, and the limitations you should know",
+)
 st.markdown('<div class="hero-subtitle">How MacroLens generates predictions, and the limitations you should know.</div>', unsafe_allow_html=True)
 
 st.divider()
@@ -99,6 +102,25 @@ col3.metric("Manually Curated", f"{total_curated:,}",
             f"{total_curated/total_cells*100:.1f}%")
 col4.metric("Rule-Based Estimate", f"{total_estimated:,}",
             f"{total_estimated/total_cells*100:.1f}%")
+
+timestamps = get_data_last_updated()
+if timestamps:
+    st.markdown("### Data freshness")
+    ts_cols = st.columns(len(timestamps))
+    for i, (label, timestamp) in enumerate(timestamps.items()):
+        with ts_cols[i]:
+            st.markdown(f"""
+            <div style="background: rgba(0, 212, 255, 0.05); border: 0.5px solid rgba(0, 212, 255, 0.2);
+                        border-radius: 8px; padding: 0.75rem 1rem;">
+                <div style="color: #8B92B0; font-size: 0.7rem; letter-spacing: 0.08em;
+                            font-family: JetBrains Mono; margin-bottom: 0.3rem;">
+                    {label.upper()}
+                </div>
+                <div style="color: #00D4FF; font-size: 0.8rem; font-family: JetBrains Mono;">
+                    {timestamp}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
 st.write("")
 
@@ -331,6 +353,196 @@ with col2:
         </ul>
     </div>
     """, unsafe_allow_html=True)
+
+st.divider()
+
+# ============ MODEL VALIDATION ============
+st.markdown('<div class="section-label">MODEL VALIDATION</div>', unsafe_allow_html=True)
+st.markdown("## Cross-validation results")
+st.markdown("""
+<div class="glass-card">
+Out-of-sample performance metrics for the gradient boosting ML engine.
+Computed using five-fold cross-validation on the historical event database,
+with folds preserving temporal order. These numbers reflect how well the
+model generalizes to events it has not seen during training.
+</div>
+""", unsafe_allow_html=True)
+
+cv_horizon = st.select_slider(
+    "Horizon for cross-validation analysis",
+    options=["1m", "3m", "6m", "1y", "2y"],
+    value="3m",
+    key="cv_horizon_slider",
+)
+
+with st.spinner("Running cross-validation..."):
+    try:
+        from src.ml_engine import run_cross_validation_suite
+        from src.data_loader import ASSET_LABELS
+        cv_results = run_cross_validation_suite(
+            assets=["sp500", "gold", "us_10y_treasury", "bitcoin", "oil_wti"],
+            horizon=cv_horizon,
+        )
+
+        if not cv_results:
+            st.warning("Insufficient data to run cross-validation.")
+        else:
+            col1, col2, col3 = st.columns(3)
+            avg_mae = sum(r["mae"] for r in cv_results) / len(cv_results)
+            avg_dir = sum(r["direction_accuracy"] for r in cv_results) / len(cv_results)
+            avg_rmse = sum(r["rmse"] for r in cv_results) / len(cv_results)
+            col1.metric(
+                "Average MAE",
+                f"{avg_mae:.2f}%",
+                "Mean absolute error across assets",
+            )
+            col2.metric(
+                "Direction accuracy",
+                f"{avg_dir:.1f}%",
+                "Correct sign prediction rate",
+            )
+            col3.metric(
+                "Average RMSE",
+                f"{avg_rmse:.2f}%",
+                "Root mean squared error",
+            )
+
+            st.markdown("### Per-asset breakdown")
+            st.caption(
+                "Lower MAE and higher direction accuracy indicate better "
+                "generalization. Bitcoin's lower sample count (n=14 vs n=30) "
+                "makes its metrics less reliable."
+            )
+
+            import plotly.graph_objects as go
+            from src.styles import get_plotly_layout
+
+            asset_names = [
+                ASSET_LABELS.get(r["asset_class"], r["asset_class"])
+                for r in cv_results
+            ]
+            mae_values = [r["mae"] for r in cv_results]
+            dir_values = [r["direction_accuracy"] for r in cv_results]
+            n_values = [r["n_samples"] for r in cv_results]
+
+            fig_cv = go.Figure()
+            fig_cv.add_trace(go.Bar(
+                name="MAE (%)",
+                x=asset_names,
+                y=mae_values,
+                marker=dict(
+                    color="#FF3B6B",
+                    opacity=0.85,
+                    line=dict(color="rgba(255,255,255,0.1)", width=1),
+                ),
+                text=[f"{v:.2f}%" for v in mae_values],
+                textposition="outside",
+                textfont=dict(
+                    color="#E4E8F1", size=12, family="JetBrains Mono"
+                ),
+                yaxis="y",
+            ))
+            fig_cv.add_trace(go.Scatter(
+                name="Direction accuracy (%)",
+                x=asset_names,
+                y=dir_values,
+                mode="lines+markers",
+                marker=dict(
+                    size=12,
+                    color="#00D4FF",
+                    line=dict(color="#FFFFFF", width=2),
+                ),
+                line=dict(color="#00D4FF", width=2),
+                text=[f"{v:.1f}%" for v in dir_values],
+                textposition="top center",
+                textfont=dict(
+                    color="#00D4FF", size=11, family="JetBrains Mono"
+                ),
+                yaxis="y2",
+            ))
+
+            layout_cv = get_plotly_layout(
+                title=dict(
+                    text=(
+                        f"<b>ML engine cross-validation — {cv_horizon.upper()} horizon</b>"
+                        f"<br><span style='font-size:11px;color:#8B92B0'>"
+                        f"Red bars: mean absolute error (lower is better). "
+                        f"Blue line: direction accuracy (higher is better).</span>"
+                    ),
+                    font=dict(size=15, color="#E4E8F1"),
+                ),
+                height=420,
+                yaxis=dict(
+                    title="MAE (%)",
+                    gridcolor="rgba(42,49,88,0.3)",
+                    tickfont=dict(color="#8B92B0"),
+                ),
+                yaxis2=dict(
+                    title="Direction accuracy (%)",
+                    overlaying="y",
+                    side="right",
+                    range=[0, 110],
+                    gridcolor="rgba(0,0,0,0)",
+                    tickfont=dict(color="#00D4FF"),
+                ),
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=-0.3,
+                    xanchor="center",
+                    x=0.5,
+                ),
+                margin=dict(l=40, r=60, t=100, b=60),
+                barmode="group",
+            )
+            fig_cv.update_layout(layout_cv)
+            st.plotly_chart(fig_cv, width='stretch')
+
+            with st.expander("Fold-by-fold prediction details"):
+                st.caption(
+                    "Each row shows one held-out event, the model prediction, "
+                    "and the actual historical return. Sorted by error descending "
+                    "so the hardest-to-predict events appear first."
+                )
+                for result in cv_results:
+                    asset_label = ASSET_LABELS.get(
+                        result["asset_class"], result["asset_class"]
+                    )
+                    st.markdown(f"**{asset_label}** — "
+                                f"MAE {result['mae']:.2f}% | "
+                                f"Direction accuracy {result['direction_accuracy']:.1f}% | "
+                                f"n={result['n_samples']}")
+                    details_sorted = sorted(
+                        result["fold_details"],
+                        key=lambda x: -x["error"],
+                    )
+                    st.dataframe(
+                        details_sorted,
+                        width='stretch',
+                        hide_index=True,
+                        height=200,
+                    )
+
+        st.markdown("""
+        <div class="glass-card" style="border-left: 3px solid #FFB547; margin-top: 1rem;">
+            <div style="color: #FFB547; font-family: JetBrains Mono; font-size: 0.7rem;
+                        font-weight: 700; letter-spacing: 0.1em; margin-bottom: 0.5rem;">
+                INTERPRETING THESE NUMBERS
+            </div>
+            <div style="color: #B8C0DC; font-size: 0.9rem; line-height: 1.6;">
+                A MAE of 10% means the model's predictions were off by an average of
+                10 percentage points on held-out events. Given that crisis returns can
+                range from -60% to +60%, this represents meaningful but imperfect signal.
+                Direction accuracy above 60% indicates the model correctly predicts
+                whether an asset rises or falls more often than a coin flip.
+                These metrics should be interpreted alongside the similarity engine
+                results, not in isolation.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    except Exception as e:
+        st.warning(f"Cross-validation unavailable: {e}")
 
 st.divider()
 

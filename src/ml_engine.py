@@ -1,77 +1,82 @@
+"""ML engine for MacroLens.
+
+Provides scenario-based impact estimation using a small-data-safe
+Gradient Boosting model. scikit-learn is imported lazily inside
+train_model() so it does not contribute to cold-start time on pages
+that do not invoke ML predictions.
 """
-ML engine for MacroLens.
-Purpose: scenario-based impact estimation (NOT prediction).
-Uses small-data-safe Gradient Boosting.
-"""
+from __future__ import annotations
 
 import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import GradientBoostingRegressor
 
 from src.data_loader import load_events, load_impacts
+from src.constants import HORIZONS
 
 
-# -------------------------------------------------
-# TRAINING DATA PREPARATION
-# -------------------------------------------------
-def prepare_training_data(asset_class, horizon="3m"):
-    """
-    Prepare training data from historical macro events.
+def prepare_training_data(
+    asset_class: str,
+    horizon: str = "3m",
+) -> tuple[np.ndarray, np.ndarray, list[str]]:
+    """Prepare training data from historical macro events.
 
     Returns:
-        X: feature matrix
-        y: target impacts
-        event_names: reference labels (for debugging)
+        X: Feature matrix of shape (n_samples, 6).
+        y: Target impact values of shape (n_samples,).
+        event_names: Event name labels aligned with X and y rows.
     """
     events = load_events()
     impacts = load_impacts()
 
-    X, y, event_names = [], [], []
+    X: list[list[float]] = []
+    y: list[float] = []
+    event_names: list[str] = []
+
+    required = ("inflation", "fed_funds_rate", "unemployment", "gdp_growth")
 
     for event in events:
         event_id = event["id"]
-
         if event_id not in impacts:
             continue
         if asset_class not in impacts[event_id]:
             continue
-
         target = impacts[event_id][asset_class].get(horizon)
         if target is None:
             continue
-
         pre = event["pre_conditions"]
-        required = ["inflation", "fed_funds_rate", "unemployment", "gdp_growth"]
         if any(pre.get(k) is None for k in required):
             continue
 
-        features = [
+        X.append([
             pre["inflation"],
             pre["fed_funds_rate"],
             pre["unemployment"],
             pre["gdp_growth"],
             event["severity"],
             event["duration_months"],
-        ]
-
-        X.append(features)
+        ])
         y.append(target)
         event_names.append(event["name"])
 
     return np.array(X), np.array(y), event_names
 
 
-# -------------------------------------------------
-# MODEL TRAINING
-# -------------------------------------------------
-def train_model(asset_class, horizon="3m"):
-    """
-    Train a Gradient Boosting model for a given asset/horizon.
-    Returns (model, scaler) or (None, None) if insufficient data.
-    """
-    X, y, _ = prepare_training_data(asset_class, horizon)
+def train_model(
+    asset_class: str,
+    horizon: str = "3m",
+) -> tuple:
+    """Train a Gradient Boosting model for a given asset and horizon.
 
-    # Guardrail: small data safety
+    scikit-learn is imported here rather than at module level to avoid
+    paying the import cost on pages that never call this function.
+
+    Returns:
+        (model, scaler) on success, or (None, None) if fewer than five
+        training samples are available.
+    """
+    from sklearn.ensemble import GradientBoostingRegressor
+    from sklearn.preprocessing import StandardScaler
+
+    X, y, _ = prepare_training_data(asset_class, horizon)
     if len(X) < 5:
         return None, None
 
@@ -85,23 +90,115 @@ def train_model(asset_class, horizon="3m"):
         random_state=42,
     )
     model.fit(X_scaled, y)
-
     return model, scaler
 
 
-# -------------------------------------------------
-# SINGLE SCENARIO PREDICTION
-# -------------------------------------------------
-def predict_with_ml(user_conditions, asset_class, horizon="3m",
-                    severity=7, duration=6):
-    """
-    ML-based impact estimate for one horizon.
+def predict_with_ml(
+    user_conditions: dict[str, float],
+    asset_class: str,
+    horizon: str = "3m",
+    severity: float = 7,
+    duration: float = 6,
+) -> dict | None:
+    """ML-based impact estimate for a single horizon.
+
+    Returns a result dict on success, or None if insufficient training data.
     """
     model, scaler = train_model(asset_class, horizon)
     if model is None:
         return None
 
-    # Default values protect against missing user inputs
+    features = np.array([[
+        user_conditions.get("inflation", 3.0),
+        user_conditions.get("fed_funds_rate", 5.0),
+        user_conditions.get("unemployment", 4.0),
+        user_conditions.get("gdp_growth", 2.0),
+        severity,
+        duration,
+    ]])
+    prediction = float(model.predict(scaler.transform(features))[0])
+
+    X, _, _ = prepare_training_data(asset_class, horizon)
+    return {
+        "prediction": round(prediction, 2),
+        "feature_importances": dict(zip(
+            ("Inflation", "Fed Rate", "Unemployment",
+             "GDP Growth", "Severity", "Duration"),
+            model.feature_importances_,
+        )),
+        "n_training_samples": len(X),
+        "model_type": "Gradient Boosting",
+    }
+
+
+def get_ml_predictions_all_horizons(
+    user_conditions: dict[str, float],
+    asset_class: str,
+    severity: float = 7,
+    duration: float = 6,
+) -> dict[str, dict | None]:
+    """Run ML estimates across all standard time horizons."""
+    return {
+        horizon: predict_with_ml(
+            user_conditions, asset_class,
+            horizon=horizon, severity=severity, duration=duration,
+        )
+        for horizon in HORIZONS
+    }
+
+
+def compare_models(
+    user_conditions: dict[str, float],
+    asset_class: str,
+    similar_events: list,
+    severity: float = 7,
+    duration: float = 6,
+) -> dict[str, dict]:
+    """Compare similarity-based estimates versus ML estimates per horizon."""
+    from src.similarity_engine import aggregate_impact_prediction
+
+    similarity_pred = aggregate_impact_prediction(similar_events, asset_class)
+    ml_pred = get_ml_predictions_all_horizons(
+        user_conditions, asset_class, severity, duration,
+    )
+
+    return {
+        horizon: {
+            "similarity": (
+                similarity_pred[horizon]["expected"]
+                if similarity_pred.get(horizon) else None
+            ),
+            "ml": (
+                ml_pred[horizon]["prediction"]
+                if ml_pred.get(horizon) else None
+            ),
+        }
+        for horizon in HORIZONS
+    }
+
+def get_shap_explanation(
+    user_conditions: dict[str, float],
+    asset_class: str,
+    horizon: str = "3m",
+    severity: float = 7,
+    duration: float = 6,
+) -> dict | None:
+    """Compute SHAP values explaining a single ML prediction.
+
+    Returns a dict with feature names, their SHAP values, the base value,
+    and the final prediction. Returns None if insufficient training data.
+
+    SHAP is imported lazily here because it is large and only needed
+    when this function is called from the Model Comparison tab.
+    """
+    import shap
+
+    model, scaler = train_model(asset_class, horizon)
+    if model is None:
+        return None
+
+    X, y, event_names = prepare_training_data(asset_class, horizon)
+
     features = np.array([[
         user_conditions.get("inflation", 3.0),
         user_conditions.get("fed_funds_rate", 5.0),
@@ -111,77 +208,50 @@ def predict_with_ml(user_conditions, asset_class, horizon="3m",
         duration,
     ]])
 
+    X_scaled = scaler.transform(X)
     features_scaled = scaler.transform(features)
+
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer.shap_values(features_scaled)
+
+    feature_names = [
+        "Inflation",
+        "Fed Rate",
+        "Unemployment",
+        "GDP Growth",
+        "Severity",
+        "Duration",
+    ]
+
     prediction = float(model.predict(features_scaled)[0])
-
-    feature_importances = dict(zip(
-        ["Inflation", "Fed Rate", "Unemployment",
-         "GDP Growth", "Severity", "Duration"],
-        model.feature_importances_,
-    ))
-
-    X, _, _ = prepare_training_data(asset_class, horizon)
+    base_value = float(explainer.expected_value)
 
     return {
+        "feature_names": feature_names,
+        "shap_values": shap_values[0].tolist(),
+        "base_value": base_value,
         "prediction": round(prediction, 2),
-        "feature_importances": feature_importances,
+        "asset_class": asset_class,
+        "horizon": horizon,
         "n_training_samples": len(X),
-        "model_type": "Gradient Boosting",
     }
 
+def run_cross_validation_suite(
+    assets: list[str] | None = None,
+    horizon: str = "3m",
+) -> list[dict]:
+    """Run cross-validation across multiple assets for a single horizon.
 
-# -------------------------------------------------
-# MULTI-HORIZON PREDICTION
-# -------------------------------------------------
-def get_ml_predictions_all_horizons(user_conditions, asset_class,
-                                    severity=7, duration=6):
+    Returns a list of result dicts sorted by MAE ascending so the best
+    performing assets appear first.
     """
-    Run ML estimates across standard time horizons.
-    """
-    horizons = ["1m", "3m", "6m", "1y", "2y"]
-    results = {}
+    if assets is None:
+        assets = ["sp500", "gold", "us_10y_treasury", "bitcoin", "oil_wti"]
 
-    for horizon in horizons:
-        results[horizon] = predict_with_ml(
-            user_conditions,
-            asset_class,
-            horizon=horizon,
-            severity=severity,
-            duration=duration,
-        )
+    results = []
+    for asset in assets:
+        result = run_cross_validation(asset, horizon)
+        if result is not None:
+            results.append(result)
 
-    return results
-
-
-# -------------------------------------------------
-# COMPARISON WITH SIMILARITY ENGINE
-# -------------------------------------------------
-def compare_models(user_conditions, asset_class, similar_events,
-                   severity=7, duration=6):
-    """
-    Compare similarity-based estimates vs ML estimates.
-    """
-    from src.similarity_engine import aggregate_impact_prediction
-
-    similarity_pred = aggregate_impact_prediction(similar_events, asset_class)
-    ml_pred = get_ml_predictions_all_horizons(
-        user_conditions, asset_class, severity, duration
-    )
-
-    comparison = {}
-
-    for horizon in ["1m", "3m", "6m", "1y", "2y"]:
-        comparison[horizon] = {
-            "similarity": (
-                similarity_pred[horizon]["expected"]
-                if similarity_pred and horizon in similarity_pred
-                else None
-            ),
-            "ml": (
-                ml_pred[horizon]["prediction"]
-                if ml_pred.get(horizon)
-                else None
-            ),
-        }
-
-    return comparison
+    return sorted(results, key=lambda x: x["mae"])

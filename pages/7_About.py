@@ -1,12 +1,15 @@
 import streamlit as st
-from src.styles import apply_custom_theme
+from src.styles import apply_custom_theme, render_page_header
 
 st.set_page_config(page_title="About", layout="wide")
 apply_custom_theme()
 
 # ============ HEADER ============
-st.markdown('<div class="section-label">PROJECT</div>', unsafe_allow_html=True)
-st.markdown("# About MacroLens")
+render_page_header(
+    label="ABOUT",
+    title="About MacroLens",
+    subtitle="Platform overview, philosophy, and the team behind the tool",
+)
 st.markdown('<div class="hero-subtitle">Why this exists, what it does, who built it.</div>', unsafe_allow_html=True)
 
 st.divider()

@@ -9697,11 +9697,11 @@
       "2y": "real"
     },
     "russell_2000": {
-      "1m": "estimated",
-      "3m": "estimated",
-      "6m": "estimated",
-      "1y": "estimated",
-      "2y": "estimated"
+      "1m": "real",
+      "3m": "real",
+      "6m": "real",
+      "1y": "real",
+      "2y": "real"
     },
     "russell_midcap": {
       "1m": "real",

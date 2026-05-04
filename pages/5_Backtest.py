@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime, date
 
-from src.styles import apply_custom_theme, get_plotly_layout
+from src.styles import apply_custom_theme, get_plotly_layout, render_page_header
 from src.data_loader import ASSET_CATEGORIES, ASSET_LABELS
 from src.historical_macro import get_historical_macro, FAMOUS_MOMENTS
 from src.backtest_engine import run_backtest, calculate_asset_accuracy
@@ -12,8 +12,11 @@ st.set_page_config(page_title="Backtest", layout="wide")
 apply_custom_theme()
 
 # ============ HEADER ============
-st.markdown('<div class="section-label">VALIDATION</div>', unsafe_allow_html=True)
-st.markdown("# Backtest Mode")
+render_page_header(
+    label="VALIDATION",
+    title="Backtest",
+    subtitle="Run analyses as if at any historical date and compare predictions to actual outcomes",
+)
 st.markdown('<div class="hero-subtitle">Run MacroLens at any historical date. Compare predictions to what actually happened.</div>', unsafe_allow_html=True)
 
 st.divider()
@@ -160,7 +163,7 @@ st.divider()
 # ============ RUN BACKTEST ============
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
-    run = st.button("RUN BACKTEST", use_container_width=True, type="primary")
+    run = st.button("RUN BACKTEST", width='stretch', type="primary")
 
 if run:
     user_conditions = {
@@ -273,7 +276,7 @@ for item in results["similar_events"]:
         "Similarity": f"{item['similarity']}%"
     })
 
-st.dataframe(pd.DataFrame(analog_data), use_container_width=True, hide_index=True)
+st.dataframe(pd.DataFrame(analog_data), width='stretch', hide_index=True)
 
 st.divider()
 
@@ -341,7 +344,7 @@ layout = get_plotly_layout(
     xaxis_title="Time Horizon",
 )
 fig.update_layout(layout)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 # Detailed breakdown table
 st.markdown("### Detailed Breakdown")
@@ -362,7 +365,7 @@ for h, label in zip(horizons, horizon_labels):
     })
 
 df = pd.DataFrame(breakdown)
-st.dataframe(df, use_container_width=True, hide_index=True)
+st.dataframe(df, width='stretch', hide_index=True)
 
 st.divider()
 
@@ -409,7 +412,7 @@ layout = get_plotly_layout(
     margin=dict(l=160, r=40, t=80, b=40),
 )
 fig.update_layout(layout)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 st.divider()
 

@@ -495,3 +495,58 @@ def get_plotly_layout(**kwargs):
     layout = dict(PLOTLY_TEMPLATE["layout"])
     layout.update(kwargs)
     return layout
+
+def render_page_header(label: str, title: str, subtitle: str) -> None:
+    """Render a consistent, structured page header across all pages.
+
+    Replaces the three-element pattern of section-label div, st.markdown h1,
+    and st.caption with a single contained block that has visual weight.
+
+    Args:
+        label: Short uppercase category tag, e.g. 'HISTORICAL ANALYSIS'.
+        title: Main page title, e.g. 'Event Explorer'.
+        subtitle: One-line description shown below the title.
+    """
+    import streamlit as st
+    st.markdown(f"""
+    <div style="
+        padding: 2rem 0 1.5rem 0;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+        margin-bottom: 1.5rem;
+    ">
+        <div style="
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            border-radius: 6px;
+            color: #00D4FF;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+        ">{label}</div>
+        <div style="
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #E4E8F1 0%, #8B92B0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        ">{title}</div>
+        <div style="
+            color: #8B92B0;
+            font-size: 0.95rem;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            line-height: 1.5;
+            max-width: 600px;
+        ">{subtitle}</div>
+    </div>
+    """, unsafe_allow_html=True)
