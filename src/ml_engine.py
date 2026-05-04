@@ -208,7 +208,6 @@ def get_shap_explanation(
         duration,
     ]])
 
-    X_scaled = scaler.transform(X)
     features_scaled = scaler.transform(features)
 
     explainer = shap.TreeExplainer(model)
@@ -235,6 +234,86 @@ def get_shap_explanation(
         "horizon": horizon,
         "n_training_samples": len(X),
     }
+
+def run_cross_validation(
+    asset_class: str,
+    horizon: str = "3m",
+    n_splits: int = 5,
+) -> dict | None:
+    """Run leave-one-out style cross-validation for a given asset and horizon.
+
+    Uses KFold with shuffle disabled to respect temporal ordering.
+    Returns MAE, RMSE, direction accuracy, and per-fold details.
+    Returns None if fewer than five training samples exist.
+    """
+    from sklearn.ensemble import GradientBoostingRegressor
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.model_selection import KFold
+
+    X, y, event_names = prepare_training_data(asset_class, horizon)
+    if len(X) < n_splits:
+        return None
+
+    kf = KFold(n_splits=n_splits, shuffle=False)
+    mae_scores: list[float] = []
+    rmse_scores: list[float] = []
+    direction_correct: list[bool] = []
+    fold_details: list[dict] = []
+
+    for fold, (train_idx, test_idx) in enumerate(kf.split(X), start=1):
+        X_train, X_test = X[train_idx], X[test_idx]
+        y_train, y_test = y[train_idx], y[test_idx]
+
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+
+        model = GradientBoostingRegressor(
+            n_estimators=150,
+            max_depth=3,
+            learning_rate=0.05,
+            random_state=42,
+        )
+        model.fit(X_train_scaled, y_train)
+        preds = model.predict(X_test_scaled)
+
+        fold_mae = float(np.mean(np.abs(preds - y_test)))
+        fold_rmse = float(np.sqrt(np.mean((preds - y_test) ** 2)))
+        fold_dir = [
+            (float(p) >= 0) == (float(a) >= 0)
+            for p, a in zip(preds, y_test)
+        ]
+
+        mae_scores.append(fold_mae)
+        rmse_scores.append(fold_rmse)
+        direction_correct.extend(fold_dir)
+
+        for name, pred, actual in zip(
+            [event_names[i] for i in test_idx], preds, y_test
+        ):
+            fold_details.append({
+                "fold": fold,
+                "event": name,
+                "predicted": round(float(pred), 2),
+                "actual": round(float(actual), 2),
+                "error": round(abs(float(pred) - float(actual)), 2),
+                "direction_correct": (float(pred) >= 0) == (float(actual) >= 0),
+            })
+
+    return {
+        "asset_class": asset_class,
+        "horizon": horizon,
+        "n_samples": len(X),
+        "n_splits": n_splits,
+        "mae": round(float(np.mean(mae_scores)), 2),
+        "mae_std": round(float(np.std(mae_scores)), 2),
+        "rmse": round(float(np.mean(rmse_scores)), 2),
+        "direction_accuracy": round(
+            sum(direction_correct) / len(direction_correct) * 100, 1
+        ),
+        "fold_details": fold_details,
+    }
+
 
 def run_cross_validation_suite(
     assets: list[str] | None = None,

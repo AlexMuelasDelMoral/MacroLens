@@ -101,7 +101,7 @@ def fetch_price_series(ticker, start_date, end_date, retries=2):
 
             return None
         except Exception as e:
-            last_err = e
+            _ = e
             if attempt < retries - 1:
                 time.sleep(1.5)
                 continue

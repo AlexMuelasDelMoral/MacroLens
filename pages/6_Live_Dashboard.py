@@ -48,7 +48,7 @@ with col1:
     st.metric(
         "Inflation (YoY)",
         f"{val}%" if val else "N/A",
-        delta=f"Target: 2.0%" if val else None,
+        delta="Target: 2.0%" if val else None,
         delta_color="inverse"
     )
 
