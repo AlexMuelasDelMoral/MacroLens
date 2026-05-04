@@ -72,7 +72,6 @@ def fetch_price_series(ticker, start_date, end_date, retries=2):
     if not ticker:
         return None
 
-    last_err = None
     for attempt in range(retries):
         try:
             t = yf.Ticker(ticker)
