@@ -42,47 +42,68 @@ CUSTOM_CSS = """
     [data-testid="collapsedControl"] {display: none !important;}
 
     /* Top navigation bar */
-    .macrolens-nav {
-        position: sticky;
-        top: 0;
-        z-index: 999;
-        background: rgba(10, 14, 39, 0.97);
-        border-bottom: 1px solid rgba(0, 212, 255, 0.15);
-        padding: 0.4rem 0;
-        margin: -1rem -1rem 0 -1rem;
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+    .main .block-container {
+        padding-top: 0.5rem !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        max-width: 1400px !important;
     }
 
-    .macrolens-nav [data-testid="stPageLink"] a,
-    .macrolens-nav [data-testid="stPageLink-NavLink"] {
+    [data-testid="stPageLink"] {
+        width: 100% !important;
+    }
+
+    [data-testid="stPageLink"] a,
+    [data-testid="stPageLink-NavLink"] {
+        display: block !important;
         color: #8B92B0 !important;
-        font-size: 0.8rem !important;
+        font-size: 0.72rem !important;
         font-weight: 600 !important;
-        letter-spacing: 0.04em !important;
+        letter-spacing: 0.06em !important;
         text-transform: uppercase !important;
-        padding: 0.4rem 0.6rem !important;
-        border-radius: 6px !important;
-        transition: all 0.2s ease !important;
+        padding: 0.35rem 0.5rem !important;
+        border-radius: 5px !important;
+        transition: color 0.15s ease, background 0.15s ease !important;
         text-decoration: none !important;
         white-space: nowrap !important;
+        text-align: center !important;
     }
 
-    .macrolens-nav [data-testid="stPageLink"] a:hover,
-    .macrolens-nav [data-testid="stPageLink-NavLink"]:hover {
+    [data-testid="stPageLink"] a:hover {
         color: #00D4FF !important;
-        background: rgba(0, 212, 255, 0.08) !important;
+        background: rgba(0, 212, 255, 0.07) !important;
     }
 
-    .macrolens-nav [aria-current="page"] a,
-    .macrolens-nav [data-testid="stPageLink-NavLink"][aria-current="page"] {
+    [data-testid="stPageLink"] a[aria-current="page"] {
         color: #00D4FF !important;
         background: rgba(0, 212, 255, 0.1) !important;
-        border-bottom: 2px solid #00D4FF !important;
     }
 
-    .nav-spacer {
-        height: 1.5rem;
+    div[data-testid="stColumns"]:first-of-type {
+        background: rgba(10, 14, 39, 0.98) !important;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.12) !important;
+        padding: 0.3rem 1.5rem !important;
+        margin: -0.5rem -2rem 0 -2rem !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 999 !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        align-items: center !important;
+    }
+
+    div[data-testid="stColumns"]:first-of-type [data-testid="stColumn"]:first-child a {
+        color: #00D4FF !important;
+        font-size: 1rem !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.01em !important;
+        text-transform: none !important;
+        font-family: Inter, sans-serif !important;
+        background: none !important;
+    }
+
+    .nav-divider {
+        height: 1.2rem;
     }
 
     /* Remove left padding now that sidebar is gone */
