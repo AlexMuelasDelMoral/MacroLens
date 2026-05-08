@@ -31,13 +31,66 @@ CUSTOM_CSS = """
         font-family: 'Inter', sans-serif;
     }
     
-    /* Hide Streamlit Branding */
+    /* Hide Streamlit branding and sidebar */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header[data-testid="stHeader"] {background: rgba(0,0,0,0) !important; border-bottom: none !important;}
     [data-testid="stToolbar"] {visibility: hidden;}
     [data-testid="stDecoration"] {visibility: hidden;}
-    [data-testid="stSidebarCollapsedControl"] {visibility: visible !important; display: flex !important;}
+    [data-testid="stSidebar"] {display: none !important;}
+    [data-testid="stSidebarCollapsedControl"] {display: none !important;}
+    [data-testid="collapsedControl"] {display: none !important;}
+
+    /* Top navigation bar */
+    .macrolens-nav {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        background: rgba(10, 14, 39, 0.97);
+        border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+        padding: 0.4rem 0;
+        margin: -1rem -1rem 0 -1rem;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .macrolens-nav [data-testid="stPageLink"] a,
+    .macrolens-nav [data-testid="stPageLink-NavLink"] {
+        color: #8B92B0 !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: uppercase !important;
+        padding: 0.4rem 0.6rem !important;
+        border-radius: 6px !important;
+        transition: all 0.2s ease !important;
+        text-decoration: none !important;
+        white-space: nowrap !important;
+    }
+
+    .macrolens-nav [data-testid="stPageLink"] a:hover,
+    .macrolens-nav [data-testid="stPageLink-NavLink"]:hover {
+        color: #00D4FF !important;
+        background: rgba(0, 212, 255, 0.08) !important;
+    }
+
+    .macrolens-nav [aria-current="page"] a,
+    .macrolens-nav [data-testid="stPageLink-NavLink"][aria-current="page"] {
+        color: #00D4FF !important;
+        background: rgba(0, 212, 255, 0.1) !important;
+        border-bottom: 2px solid #00D4FF !important;
+    }
+
+    .nav-spacer {
+        height: 1.5rem;
+    }
+
+    /* Remove left padding now that sidebar is gone */
+    .main .block-container {
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        max-width: 1400px !important;
+    }
     
     /* Main Container */
     .main .block-container {

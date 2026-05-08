@@ -1,9 +1,11 @@
 import streamlit as st
 from src.styles import apply_custom_theme, render_page_header
+from src.navbar import render_navbar
 from src.theory_engine import THEORIES
 
 st.set_page_config(page_title="Learn", layout="wide")
 apply_custom_theme()
+render_navbar()
 
 render_page_header(
     label="EDUCATION",

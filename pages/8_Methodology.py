@@ -1,9 +1,11 @@
 import streamlit as st
 from src.styles import apply_custom_theme, render_page_header
+from src.navbar import render_navbar
 from src.data_loader import load_events, get_asset_classes, calculate_quality_score, get_data_last_updated
 
 st.set_page_config(page_title="Methodology", layout="wide")
 apply_custom_theme()
+render_navbar()
 
 # ============ HEADER ============
 render_page_header(

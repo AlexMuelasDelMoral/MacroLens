@@ -4,12 +4,14 @@ import plotly.graph_objects as go
 from datetime import datetime, date
 
 from src.styles import apply_custom_theme, get_plotly_layout, render_page_header
+from src.navbar import render_navbar
 from src.data_loader import ASSET_CATEGORIES, ASSET_LABELS
 from src.historical_macro import get_historical_macro, FAMOUS_MOMENTS
 from src.backtest_engine import run_backtest, calculate_asset_accuracy
 
 st.set_page_config(page_title="Backtest", layout="wide")
 apply_custom_theme()
+render_navbar()
 
 # ============ HEADER ============
 render_page_header(

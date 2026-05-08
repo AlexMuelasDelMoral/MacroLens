@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime
 from src.styles import apply_custom_theme, get_plotly_layout, render_page_header
+from src.navbar import render_navbar
 from src.live_data import (
     fetch_latest_indicator, fetch_historical_series,
     get_current_macro_snapshot, get_recession_probability,
@@ -17,6 +18,7 @@ from src.similarity_engine import find_similar_events, aggregate_impact_predicti
 
 st.set_page_config(page_title="Live Dashboard", layout="wide")
 apply_custom_theme()
+render_navbar()
 
 render_page_header(
     label="REAL-TIME DATA",

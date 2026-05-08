@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 from src.impact_matrix import build_impact_matrix, compute_portfolio_returns
 from src.constants import HORIZONS, HORIZON_LABELS, PRESET_PORTFOLIOS as PRESETS
 from src.styles import apply_custom_theme, get_plotly_layout, render_page_header
+from src.navbar import render_navbar
 from src.data_loader import load_events, load_impacts, ASSET_LABELS, ASSET_CATEGORIES
 from src.visualizations import plot_portfolio_performance
 from src.report_generator import generate_portfolio_report
@@ -36,6 +37,7 @@ _load_state_from_url()
 
 st.set_page_config(page_title="Portfolio Stress Test", layout="wide")
 apply_custom_theme()
+render_navbar()
 
 render_page_header(
     label="STRESS TESTING",

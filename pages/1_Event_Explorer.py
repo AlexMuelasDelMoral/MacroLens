@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from src.styles import apply_custom_theme, render_page_header
+from src.navbar import render_navbar
 from src.data_loader import (
     load_events, load_impacts, get_asset_classes,
     ASSET_LABELS, ASSET_CATEGORIES
@@ -11,6 +12,7 @@ from src.theory_engine import get_relevant_theories, get_asset_narrative
 
 st.set_page_config(page_title="Event Explorer", layout="wide")
 apply_custom_theme()
+render_navbar()
 
 render_page_header(
     label="HISTORICAL ANALYSIS",

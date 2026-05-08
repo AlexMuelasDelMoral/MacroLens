@@ -1,8 +1,10 @@
 import streamlit as st
 from src.styles import apply_custom_theme, render_page_header
+from src.navbar import render_navbar
 
 st.set_page_config(page_title="About", layout="wide")
 apply_custom_theme()
+render_navbar()
 
 # ============ HEADER ============
 render_page_header(
