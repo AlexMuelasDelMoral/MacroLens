@@ -34,7 +34,10 @@ CUSTOM_CSS = """
     /* Hide Streamlit Branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
+    header[data-testid="stHeader"] {background: rgba(0,0,0,0) !important; border-bottom: none !important;}
+    [data-testid="stToolbar"] {visibility: hidden;}
+    [data-testid="stDecoration"] {visibility: hidden;}
+    [data-testid="stSidebarCollapsedControl"] {visibility: visible !important; display: flex !important;}
     
     /* Main Container */
     .main .block-container {
